@@ -12,27 +12,39 @@ const cardTemplate = document.querySelector('#card-template').content; //Мак�
 const placesList = document.querySelector('.places__list'); //Место куда пихаем
 const showPopUpNewcard = document.querySelector('.popup_type_new-card'); //Форма новой карточки
 const showPopUpProfile = document.querySelector('.popup_type_edit')
+let cardCollectionOnDysplay = '';
 
-//Function - все карточки на стол
+//function - все карточки на стол (Этот код только для отображения карточек из базы)
 function loadCardCollection(initialCards) {
   initialCards.forEach((element) => {
     const cardCopy = cardTemplate.querySelector('.card').cloneNode(true); //Сделали копию
     cardCopy.querySelector('.card__image').src = element.link;
     cardCopy.querySelector('.card__title').textContent = element.name;
     placesList.append(cardCopy);
+
   });
 }
 
-loadCardCollection(initialCards); //вызов - Покажи все карты.
+loadCardCollection(initialCards); //вызов - Покажи все карты, которые есть в базе
 
-//Удаление выбранной карточки
-const deleteCard = document.querySelectorAll('.card__delete-button');
+//Блок обработки событий по карточке
+placesList.addEventListener('click', function (evt) {
+    switch (evt.target.classList.value){
+        case 'card__delete-button': { //Удаление выбранной карточки  
+            evt.target.parentElement.remove();
+            break;
+        }
+        case 'card__like-button': { //Обработка кнопки card__like-button
+            evt.target.classList.add('card__like-button_is-active');
+            break;
+        }
+        case 'card__like-button card__like-button_is-active': {
+            evt.target.classList.remove('card__like-button_is-active');
+            break;
+        }
+    }
 
-deleteCard.forEach((element) => {
-  element.addEventListener('click', function (evt) {
-    evt.target.parentElement.remove();
-  });
-});
+})
 
 //Обработка кнопки вызова диалогового окна для добавления новой карточки
 const addNewButton = document.querySelector('.profile__add-button');
@@ -83,13 +95,6 @@ popUpClose.forEach((element) => {
 
 })
 
-//Обработка кнопки card__like-button
-const likeButton = document.querySelectorAll('.card__like-button');
-likeButton.forEach((element) => {
-    element.addEventListener('click', function(){
-        this.classList.toggle('card__like-button_is-active')
-    })
-})
 
 //Редактирование профиля
 const prifileEditButton = document.querySelector('.profile__edit-button');
