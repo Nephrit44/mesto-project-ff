@@ -16,12 +16,10 @@
     3.1. Удаление карточек
     3.2. Поставить лайк
     3.3. Снять лайк
+    3.4. Изображение на всеь экран
 4. Обработка нажатия на кнопку с плюсом, для открытия всплывающего окна
-5. Обработка кнопки сохранить во всплывающих окнах
-    5.1. Добавление новой карточки
-    5.2. Изменение профиля карточки
-6. Обработка кнопки закрытия карточки в любом PopUp-окне
-7. Обработка кнопки вызова всплывающего окна для редактирования профиля
+5. Обработка кнопки закрытия карточки в любом PopUp-окне
+6. Обработка кнопки вызова всплывающего окна для редактирования профиля
 */
 
 //1. Глобальные переменные
@@ -29,6 +27,7 @@ const cardTemplate = document.querySelector("#card-template").content; //Мак�
 const placesList = document.querySelector(".places__list"); //Место куда пихаем
 const showPopUpNewcard = document.querySelector(".popup_type_new-card"); //Форма новой карточки
 const showPopUpProfile = document.querySelector(".popup_type_edit"); //Форма редактирования профиля
+const showPopUpImage = document.querySelector('.popup_type_image'); //Форма для большой картинки
 
 //2. Вывод преустановленныех карточек на экран.
 function loadCardCollection(initialCards) {
@@ -59,77 +58,59 @@ placesList.addEventListener("click", function (evt) {
       evt.target.classList.remove("card__like-button_is-active");
       break;
     }
+    case "card__image":{
+      //3.4. Изображение на всеь экран
+      showPopUpImage.classList.add('popup_is-opened');
+      showPopUpImage.querySelector('.popup__image').src = evt.target.src;
+      break;
+    }
   }
 });
 
-//4. Обработка нажатия на кнопку с плюсом, для открытия всплывающего окна
-document
-  .querySelector(".profile__add-button")
-  .addEventListener("click", function () {
+//4. Добавление новой кастомной карточки
+document.querySelector(".profile__add-button").addEventListener("click", function () {
     showPopUpNewcard.classList.add("popup_is-opened");
-    pressSaveButton_in_popUp(showPopUpNewcard.dataset.formname); //Работа с вызванной формой + передача имени формы
+
+    showPopUpNewcard.addEventListener("submit", function (evt) {
+      evt.preventDefault();
+      const cardCopy = cardTemplate.querySelector(".card").cloneNode(true); //Сделали копию
+      cardCopy.querySelector(".card__image").src = showPopUpNewcard.querySelector('input[name="link"]').value;
+      cardCopy.querySelector(".card__title").textContent = showPopUpNewcard.querySelector('input[name="place-name"]').value;
+      showPopUpNewcard.querySelector('input[name="link"]').value = '';
+      showPopUpNewcard.querySelector('input[name="place-name"]').value = '';
+      showPopUpNewcard.classList.remove('popup_is-opened');
+      placesList.append(cardCopy);
+    });
   });
 
-//5. Обработка кнопки сохранить во всплывающих окнах
-function pressSaveButton_in_popUp(formName) {
-  switch (formName) {
-    case "newCard":
-      {
-        //5.1. Добавление новой карточки
-        const openedFormNow = document.querySelector(
-          `[data-formname="${formName}"]`
-        );
-        openedFormNow.addEventListener("submit", function (evt) {
-          evt.preventDefault();
-          const cardCopy = cardTemplate.querySelector(".card").cloneNode(true); //Сделали копию
-          cardCopy.querySelector(".card__image").src =
-            openedFormNow.querySelector('input[name="link"]').value;
-          cardCopy.querySelector(".card__title").textContent =
-            openedFormNow.querySelector('input[name="place-name"]').value;
-          placesList.append(cardCopy);
-        });
-      }
-      break;
-    case "editProfile":
-      {
-        //5.2. Изменение профиля карточки
+//5. Обработка кнопки закрытия карточки в любом PopUp-окне
+document.querySelector(".page__content").addEventListener('click', function(evt){
 
-        const openedFormNow = document.querySelector(
-          `[data-formname="${formName}"]`
-        );
-        openedFormNow.addEventListener("submit", function (evt) {
-          evt.preventDefault();
-          document.querySelector(".profile__title").textContent =
-            openedFormNow.querySelector(".popup__input_type_name").value;
-          document.querySelector(".profile__description").textContent =
-            openedFormNow.querySelector(".popup__input_type_description").value;
-          openedFormNow.classList.remove("popup_is-opened");
-        });
-      }
-      break;
-  }
-}
+  const popUppopup_form_collection = document.querySelectorAll('.popup');
 
-//6. Обработка кнопки закрытия карточки в любом PopUp-окне
-const popUpClose = document.querySelectorAll(".popup__close");
-popUpClose.forEach((element) => {
-  element.addEventListener("click", function () {
-    const openedFormPopUp = document.querySelector(
-      `[data-formname = "${element.dataset.closeform}"]`
-    );
-    openedFormPopUp.classList.remove("popup_is-opened");
-  });
-});
+  popUppopup_form_collection.forEach((element) => {
+    element.querySelector('.popup__close').addEventListener('click', function (evt){
+      element.classList.remove('popup_is-opened');
+    })
+  })
 
-//7. Обработка кнопки вызова всплывающего окна для редактирования профиля
-document
-  .querySelector(".profile__edit-button")
-  .addEventListener("click", function () {
-    showPopUpProfile.classList.add("popup_is-opened"); //Работа с вызванной формой + передача имени формы
-    pressSaveButton_in_popUp(showPopUpProfile.dataset.formname);
+})
+
+//6. Изменение профиля карточки
+document.querySelector(".profile__edit-button").addEventListener("click", function () {
+    showPopUpProfile.classList.add("popup_is-opened"); 
     //Вставляем в открывшуюся форму текущие значения
-    showPopUpProfile.querySelector(".popup__input_type_name").value =
-      document.querySelector(".profile__title").textContent;
-    showPopUpProfile.querySelector(".popup__input_type_description").value =
-      document.querySelector(".profile__description").textContent;
+    showPopUpProfile.querySelector(".popup__input_type_name").value = document.querySelector(".profile__title").textContent;
+    showPopUpProfile.querySelector(".popup__input_type_description").value = document.querySelector(".profile__description").textContent;
+      
+        showPopUpProfile.addEventListener("submit", function (evt) {
+      evt.preventDefault();
+      
+      document.querySelector(".profile__title").textContent = showPopUpProfile.querySelector(".popup__input_type_name").value;
+      document.querySelector(".profile__description").textContent = showPopUpProfile.querySelector(".popup__input_type_description").value;  
+      showPopUpProfile.querySelector(".popup__input_type_name").value = '';
+      showPopUpProfile.querySelector(".popup__input_type_description").value = '';  
+      showPopUpProfile.classList.remove("popup_is-opened"); 
+    })
   });
+
