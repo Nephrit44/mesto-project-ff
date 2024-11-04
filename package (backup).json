@@ -1,0 +1,23 @@
+{
+  "name": "mesto-project-ff",
+  "version": "0.0.1",
+  "description": "Сcылка на проект [https://github.com/Nephrit44/mesto-project-ff.git](https://github.com/Nephrit44/mesto-project-ff.git)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nephrit44/mesto-project-ff.git"
+  },
+  "author": "Solovev Igor",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nephrit44/mesto-project-ff/issues"
+  },
+  "homepage": "https://github.com/Nephrit44/mesto-project-ff#readme",
+  "devDependencies": {
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4"
+  }
+}
