@@ -1,65 +1,75 @@
-const path = require("path"); // подключаем path к конфигу вебпак Обязательный файл
-const HtmlWebpackPlugin = require("html-webpack-plugin"); // Подключение плагина для работы webpack с html обязатально
-const { CleanWebpackPlugin } = require("clean-webpack-plugin"); // плагин, который будет каждый раз при сборке проекта удалять содержимое папки dist
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const path = require('path'); //Обязательный параметр
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-  entry: { main: "./src/index.js" }, // Указываем точку входа
-  output: {
-    //Здесь прописывается путь, куда будет выгружен готовый js файл
-    path: path.resolve(__dirname, "dist"), //без объявления path работать не будет
-    filename: "main.js",
-    publicPath: "",
+  mode: 'production', //Способ вывода собранных данных. production - без коментариев, development - с кментариями
+  entry: {
+    main: path.resolve(__dirname, 'src/scripts/index.js') //откуда будет браться основной входной фаил. Из него будет подтягиваться всё остальное.
   },
-  mode: "development", // добавили режим разработчика
-  devServer: {
-    static: path.resolve(__dirname, "./dist"), // путь, куда "смотрит" режим разработчика
-    compress: true, // это ускорит загрузку в режиме разработки
-    port: 8081, // порт, чтобы открывать сайт по адресу localhost:8080 (для alt linux это 8081, 80 - занят системой), но можно поменять порт
+  output: { //Выходные параметры
+    path: path.resolve(__dirname, 'dist'), //место куда будут сгружаться собранные данные для публикации
+    filename: 'main.js', //как будет называться основной файл
+    publicPath: '',
+  },
+  /* LIVE SERVER
+    1. Установка сервера с помощью комманды npm install -D webpack-dev-server
+    2. Для запуска сервера npx webpack serve
+    3. Для выхода из этого режима нажать в терминале ctrl C
+  */
+  devServer: { 
+    static: path.resolve(__dirname, './dist'), //Где находится запускаемый файл index.html
+    open: true,
+    compress: true, //Сжимать данные для скорости
+    port: 8081, //Порт на котором будет открываться liveserver, 8080 - по умолчанию, но в linux он занят
+    hot: true, //автоматические перезагружаться при изменении данных в dist
+    static: {
+      directory: path.join(__dirname, 'dist') //Будем показывать из какой папки
+    }
+  },
 
-    open: true, // сайт будет открываться сам при запуске npm run dev
-  },
-  module: {
-    rules: [
-      // rules — это массив правил
-      // добавим в него объект правил для бабеля
+  module: { //Подключение дополнительных файлов
+    rules: [ 
+      //Подкчлюение JS фалов
       {
-        // регулярное выражение, которое ищет все js файлы
         test: /\.js$/,
-        // при обработке этих файлов нужно использовать babel-loader
-        use: "babel-loader",
-        // исключает папку node_modules, файлы в ней обрабатывать не нужно
-        exclude: "/node_modules/",
+        use: 'babel-loader',
+        exclude: '/node_modules/'
       },
+
+      //Подключение изображений
       {
-        // регулярное выражение, которое ищет все файлы с такими расширениями
         test: /\.(png|svg|jpg|gif|woff(2)?|eot|ttf|otf)$/,
-        type: "asset/resource",
+        type: 'asset/resource',
       },
+
+      /* Подкчлючение CSS файлов
+      1. Установка:
+         npm i postcss-loader --save-dev
+         npm i autoprefixer --save-dev
+         npm i cssnano --save-dev 
+      */
       {
-        // применять это правило только к CSS-файлам
         test: /\.css$/,
-        // при обработке этих файлов нужно использовать
-        // MiniCssExtractPlugin.loader и css-loader
-        use: [
-          MiniCssExtractPlugin.loader,
-          {
-            loader: "css-loader",
+        use: [MiniCssExtractPlugin.loader, {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1
+            }
           },
-        ],
+          'postcss-loader' //В текущей сборке используется сборщик postcss-loader, у него есть отдельный файл настроек postcss.config.js
+        ]
       },
-    ],
+    ]
   },
+
   plugins: [
-    // массив для webpack для работы с HTML
     new HtmlWebpackPlugin({
-      template: "./src/index.html", // путь к файлу index.html
+      template: './src/index.html'
     }),
-    new CleanWebpackPlugin(
-      template: 'src/index.html'
-    ), // вызов плагина
     new CleanWebpackPlugin(),
-    new MiniCssExtractPlugin() // подключение плагина для объединения файлов
-  ],
-  
-};
+    new MiniCssExtractPlugin(),
+
+  ]
+}
