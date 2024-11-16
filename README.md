@@ -1,4 +1,4 @@
-# Спринт 5: проект - "Проектная работа Mesto"
+# Спринт 6: проект - "Проектная работа Mesto"
 Сcылка на проект [https://github.com/Nephrit44/mesto-project-ff.git](https://github.com/Nephrit44/mesto-project-ff.git)  
   
 Данный проект указан здесь, как результат моего обучения на курсах Yandex-практикум.  
