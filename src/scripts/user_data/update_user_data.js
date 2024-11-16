@@ -1,4 +1,4 @@
-import { close_popup_default } from "./close_popup_default.js";
+import { close_popup_default } from "./popup/close_popup_default.js";
 export function update_profile_data(curentPopup) {
   /*
     1. Слушаем кнопку и реагируем на неё

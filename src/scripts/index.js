@@ -1,10 +1,10 @@
 import { initialCards } from "./cards.js";
-import { showPopup } from "./show_popup.js";
-import { closePopUp_by_button } from "./close_popup_by_button.js";
-import { closePopUp_by_ESC } from "./close_popup_by_esc.js";
-import { closePopUp_by_freespace } from "./close_popup_by_freespace.js";
+import { showPopup } from "./popup/show_popup.js";
+import { closePopUp_by_button } from "./popup/close_popup_by_button.js";
+import { closePopUp_by_ESC } from "./popup/close_popup_by_esc.js";
+import { closePopUp_by_freespace } from "./popup/close_popup_by_freespace.js";
 import { load_profile_data } from "./load_user_data.js";
-import { update_profile_data } from "./update_user_profile.js"
+import { update_profile_data } from "./update_user_data.js"
 
 import "../pages/index.css";
 
@@ -58,8 +58,9 @@ document.addEventListener("click", function (e) {
 
   switch (e.target.classList.value) { //Определяем, что за кнопку я нажал
 
-    case "profile__edit-button": { //Редактирование профиля
+    case "profile__edit-button": {
       /*
+      Редактирование профиля
       1. Получить соответствующий попап и показать его +
       3. Обработать кнопку закрытия по крестику
       4. Обработка закрытия по любому месту кроме формы попапа
@@ -69,16 +70,12 @@ document.addEventListener("click", function (e) {
       */
       const $_curentPopup = document.querySelector(".popup_type_edit");
 
-      showPopup($_curentPopup); //Открываем попап
-      closePopUp_by_button($_curentPopup); //Слушалку на кнопку с крестиком
-      closePopUp_by_ESC($_curentPopup); //Слушалка на ESC
-      closePopUp_by_freespace($_curentPopup); //Слушалка на пустое пространство
-      load_profile_data( //Подтягиваем данные со страницы в попап
-        $_curentPopup,
-        document.querySelector('.profile__title').textContent,
-        document.querySelector('.profile__description').textContent
-      );
-      update_profile_data($_curentPopup); //обновляем пользовательские данные
+      showPopup($_curentPopup);
+      closePopUp_by_button($_curentPopup); 
+      closePopUp_by_ESC($_curentPopup); 
+      closePopUp_by_freespace($_curentPopup); 
+      load_profile_data($_curentPopup);
+      update_profile_data($_curentPopup); 
       break;
     }
 
