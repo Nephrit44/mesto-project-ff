@@ -14,7 +14,7 @@
     <div class="page__content">
       <header class="header page__section">
         <img
-          src="./images/logo.svg"
+          src="<%=require('./images/logo.svg')%>"
           alt="Логотип проекта масто"
           class="logo header__logo"
         />
@@ -24,7 +24,7 @@
         <section class="profile page__section">
           <div
             class="profile__image"
-            style="background-image: url('./images/avatar.jpg')"
+            style="background-image: url('./avatar.jpg')"
           ></div>
           <div class="profile__info">
             <h1 class="profile__title">Жак-Ив Кусто</h1>
@@ -114,6 +114,5 @@
       </li>
     </template>
 
-    <script src="./main.js"></script>
   </body>
 </html>
