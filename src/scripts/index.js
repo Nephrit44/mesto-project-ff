@@ -1,14 +1,12 @@
 import { initialCards } from "./cards.js";
+import { showPopup } from "./show_popup.js";
+import { closePopUp_by_button } from "./close_popup_by_button.js";
+import { closePopUp_by_ESC } from "./close_popup_by_esc.js";
+import { closePopUp_by_freespace } from "./close_popup_by_freespace.js";
+import { load_profile_data } from "./load_user_data.js";
+import { update_profile_data } from "./update_user_profile.js"
+
 import "../pages/index.css";
-/*
-    СОДЕРЖАНИЕ:
-
-1. Глобальные переменные
-2. Вывод карточек на страницу
-3. Создание карточек из макета
-4. Обработка удаления указанного элемента
-
-*/
 
 //1. Глобальные переменные
 const cardTemplate = document.querySelector("#card-template").content; //Макет под карточки
@@ -20,6 +18,7 @@ function loadCard() {
     placesList.append(createCard(item, deleteElement));
   });
 }
+
 loadCard();
 
 //3. Создание карточек из макета
@@ -55,118 +54,68 @@ function deleteElement(element) {
 //Функция навешивания слушалок для открытия модальных окон
 
 document.addEventListener("click", function (e) {
-  //console.log(e.target.parentElement.lastChild.textContent)
+  //console.log(e.target.parentElement.querySelector(".profile__title").textContent);
 
-  switch (e.target.classList.value) {
-    case "profile__edit-button": {
-      addClass_ShowModal("popup_type_edit");
+  switch (e.target.classList.value) { //Определяем, что за кнопку я нажал
+
+    case "profile__edit-button": { //Редактирование профиля
+      /*
+      1. Получить соответствующий попап и показать его +
+      3. Обработать кнопку закрытия по крестику
+      4. Обработка закрытия по любому месту кроме формы попапа
+      5. Обработка закрытия по кнопке ESC
+      6. Получить данные со страницы и вставить в попап
+      7. Обработка кнопки save
+      */
+      const $_curentPopup = document.querySelector(".popup_type_edit");
+
+      showPopup($_curentPopup); //Открываем попап
+      closePopUp_by_button($_curentPopup); //Слушалку на кнопку с крестиком
+      closePopUp_by_ESC($_curentPopup); //Слушалка на ESC
+      closePopUp_by_freespace($_curentPopup); //Слушалка на пустое пространство
+      load_profile_data( //Подтягиваем данные со страницы в попап
+        $_curentPopup,
+        document.querySelector('.profile__title').textContent,
+        document.querySelector('.profile__description').textContent
+      );
+      update_profile_data($_curentPopup); //обновляем пользовательские данные
       break;
     }
+
     case "profile__add-button": {
-      addClass_ShowModal("popup_type_new-card");
+      addClass_ShowModal1("popup_type_new-card");
       break;
     }
     case "card__image": {
-      addClass_ShowModal("popup_type_image", e.target.src, e.target.parentElement.lastChild.textContent);
+      addClass_ShowModal1(
+        "popup_type_image",
+        e.target.src,
+        e.target.parentElement.lastChild.textContent
+      );
       break;
     }
   }
-
 });
+
+
+
 
 function addClass_ShowModal(modal, currentIMG, cardDescription) {
   const $_modal = document.querySelector(`.${modal}`);
   //console.log(currentIMG)
 
-  $_modal.classList.add("popup_is-opened"); //Открываем модалку
-  
-  const $_btn_close_modal = $_modal.querySelector(".popup__close"); //Ищем крестик
-  //Закрытие по кнопке крестик
-  $_btn_close_modal.addEventListener(
-    "click",
-    function () {
-      remove_class_for_close($_modal);
-    },
-    { once: true }
-  );
 
-  document.addEventListener(
-    "keydown",
-    function (e) {
-      if (e.key == "Escape" && $_modal.classList.contains("popup_is-opened")) {
-        remove_class_for_close($_modal);
-      }
-    },
-    { once: true }
-  );
+
+
 
   //В этом же окне вешаем слушалку на открытое окно и закрываем если кликнул за пределы form
-  $_modal.addEventListener(
-    "click",
-    function (e) {
-      if (e.target.classList.contains("popup_is-opened")) {
-        remove_class_for_close($_modal);
-      }
-    },
-    { once: true }
-  );
+
 
   //Ищем картинку и  подпись
-  if(currentIMG !== 'undefined'){
-    $_modal.querySelector('.popup__image').src = currentIMG;
-    $_modal.querySelector('.popup__caption').textContent = cardDescription;
+  if (currentIMG !== "undefined") {
+    $_modal.querySelector(".popup__image").src = currentIMG;
+    $_modal.querySelector(".popup__caption").textContent = cardDescription;
   }
 }
 
-//Функция подгрузки текущей информации в открытое окно по редактированию профиля
-function load_profile_data(edit_modal) {
-  const $_userName = document.querySelector(".profile__title").textContent;
-  const $_userDescription = document.querySelector(
-    ".profile__description"
-  ).textContent;
 
-  edit_modal.querySelector('input[name="name"]').value = $_userName;
-  edit_modal.querySelector('input[name="description"]').value =
-    $_userDescription;
-}
-
-//Универсальная цункция закрытия модалок
-function remove_class_for_close(openedForm) {
-  openedForm.classList.remove("popup_is-opened");
-}
-
-const formElement = document.forms["edit-profile"];
-
-function handleFormSubmit(evt) {
-  evt.preventDefault();
-
-  const nameInput = formElement.elements.name.value;
-  const jobInput = formElement.elements.description.value;
-
-  document.querySelector(".profile__title").textContent = nameInput;
-  document.querySelector(".profile__description").textContent = jobInput;
-
-  remove_class_for_close(formElement.parentElement.parentElement);
-}
-
-formElement.addEventListener("submit", handleFormSubmit);
-
-const formElementNewCard = document.forms["new-place"];
-
-function handleFormSubmit2(evt) {
-  evt.preventDefault();
-
-  const cardName = formElementNewCard.elements["place-name"].value;
-  const cardLink = formElementNewCard.elements.link.value;
-
-  const $_newUserCaRD = {
-    name: cardName,
-    link: cardLink,
-  };
-
-  initialCards.push($_newUserCaRD);
-  loadCard();
-  remove_class_for_close(formElement.parentElement.parentElement);
-}
-
-formElementNewCard.addEventListener("submit", handleFormSubmit2);
