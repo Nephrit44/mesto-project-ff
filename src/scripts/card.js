@@ -1,9 +1,9 @@
 const cardTemplate = document.querySelector("#card-template").content; //Макет под карточки
 
 export {
-  show_selected_img,
+  showSelectedIMG,
   createCard,
-  load_profile_data,
+  loadProfileData,
   updateProfileData,
   addUserCard,
   deleteElement,
@@ -24,22 +24,24 @@ function createCard(cardContent, callbackDeleteElement) {
     callbackDeleteElement(evt.target.parentElement);
   });
 
-  cardElement
-    .querySelector(".card__like-button")
-    .addEventListener("click", function (e) {
+  cardElement.querySelector(".card__like-button").addEventListener(
+    "click",
+    function (e) {
       e.target.classList.toggle("card__like-button_is-active");
-    });
+    },
+    { once: true }
+  );
 
   return cardElement;
 }
 
-function show_selected_img(curentPopup, currentCardIMG, currentCardTitle) {
+function showSelectedIMG(curentPopup, currentCardIMG, currentCardTitle) {
   curentPopup.querySelector(".popup__image").src = currentCardIMG;
   curentPopup.querySelector(".popup__caption").textContent = currentCardTitle;
 }
 
 //Функция подгрузки текущей информации в открытое окно по редактированию профиля
-function load_profile_data(curentPopup) {
+function loadProfileData(curentPopup) {
   const profTitle = document.querySelector(".profile__title").textContent;
   const profDescrition = document.querySelector(
     ".profile__description"
@@ -71,19 +73,22 @@ function updateProfileData(curentPopup) {
 function addUserCard(curentPopup, placesList) {
   curentPopup.querySelector('input[name="place-name"]').value = "";
   curentPopup.querySelector('input[name="link"]').value = "";
-  curentPopup.addEventListener("submit", function (e) {
-    e.preventDefault();
-    const newCard = {};
-    const $_placeName = document.forms["new-place"]["place-name"].value;
-    const $_link = document.forms["new-place"].link.value;
+  curentPopup.addEventListener(
+    "submit",
+    function (e) {
+      e.preventDefault();
+      const newCard = {};
+      const $_placeName = document.forms["new-place"]["place-name"].value;
+      const $_link = document.forms["new-place"].link.value;
 
-    newCard.name = $_placeName,
-    newCard.link = $_link,
+      (newCard.name = $_placeName),
+        (newCard.link = $_link),
+        placesList.prepend(createCard(newCard, deleteElement));
 
-    placesList.append(createCard(newCard, deleteElement));
-
-    curentPopup.classList.remove("popup_is-opened");
-  });
+      curentPopup.classList.remove("popup_is-opened");
+    },
+    { once: true }
+  );
 }
 
 //4. Обработка удаления указанного элемента

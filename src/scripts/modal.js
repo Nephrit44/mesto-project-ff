@@ -1,12 +1,12 @@
 export {
-  closePopUp_by_button,
-  closePopUp_by_ESC,
-  closePopUp_by_freespace,
-  showPopup,
+  closePopUpByButton,
+  closePopUpByESC,
+  closePopUpByOverlay,
+  showPopUp,
 };
 
 //Функция наложения слушателя на крестик
-function closePopUp_by_button(curentPopup) {
+function closePopUpByButton(curentPopup) {
   const $_btn_close_modal = curentPopup.querySelector(".popup__close"); //Ищем крестик
   //Закрытие по кнопке крестик
   $_btn_close_modal.addEventListener(
@@ -19,7 +19,7 @@ function closePopUp_by_button(curentPopup) {
 }
 
 //Функция наложения слушателя по кнопке ESC
-function closePopUp_by_ESC(curentPopup) {
+function closePopUpByESC(curentPopup) {
   document.addEventListener(
     "keydown",
     function (e) {
@@ -35,8 +35,8 @@ function closePopUp_by_ESC(curentPopup) {
 }
 
 //Функция наложения слушателя за пределами PopUP
-function closePopUp_by_freespace(curentPopup) {
-  curentPopup.addEventListener(
+function closePopUpByOverlay(curentPopup) {
+  document.addEventListener(
     "click",
     function (e) {
       if (e.target.classList.contains("popup_is-opened")) {
@@ -48,6 +48,6 @@ function closePopUp_by_freespace(curentPopup) {
 }
 
 //Функция открытия
-function showPopup(curentPopup) {
-  curentPopup.classList.add("popup_is-opened");
+function showPopUp(curentPopup) {
+  curentPopup.classList.add("popup_is-animated", "popup_is-opened");
 }
