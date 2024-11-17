@@ -69,12 +69,11 @@ function updateProfileData(curentPopup) {
 }
 
 function addUserCard(curentPopup, placesList) {
-  const newCard = {};
   curentPopup.querySelector('input[name="place-name"]').value = "";
   curentPopup.querySelector('input[name="link"]').value = "";
   curentPopup.addEventListener("submit", function (e) {
     e.preventDefault();
-
+    const newCard = {};
     const $_placeName = document.forms["new-place"]["place-name"].value;
     const $_link = document.forms["new-place"].link.value;
 

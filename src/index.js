@@ -1,4 +1,4 @@
-import { initialCards } from "./cards.js";
+import { initialCards } from "./scripts/cards.js";
 import {
   show_selected_img,
   createCard,
@@ -6,14 +6,14 @@ import {
   updateProfileData,
   addUserCard,
   deleteElement
-} from "./card.js";
+} from "./scripts/card.js";
 
 import {
   closePopUp_by_button,
   closePopUp_by_ESC,
   closePopUp_by_freespace,
   showPopup,
-} from "./modal.js";
+} from "./scripts/modal.js";
 
 import "../pages/index.css";
 
