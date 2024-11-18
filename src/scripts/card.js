@@ -1,39 +1,52 @@
-const cardTemplate = document.querySelector("#card-template").content; //Макет под карточки
+import { onDeleteCard } from "../index.js";
 
 export {
   showSelectedIMG,
   createCard,
   loadProfileData,
   updateProfileData,
-  addUserCard,
-  deleteElement,
 };
 
-function createCard(cardContent, callbackDeleteElement) {
-  const cardElement = cardTemplate.querySelector(".card").cloneNode(true); //Сделали копию карточки
+import {
+  closePopUpByButton,
+  closePopUpByESC,
+  closePopUpByOverlay,
+  openPopup,
+  closePopup,
+} from "./modal.js";
 
-  const cardImage = cardElement.querySelector(".card__image"); //Нашли картинку
-  cardImage.src = cardContent.link;
-  cardImage.alt = cardContent.alt;
+const cardTemplate = document.querySelector("#card-template").content; //Макет под карточки
+const newCardForm = document.forms["new-place"]; //Форма в новой карточке
 
-  const cardTitle = cardElement.querySelector(".card__title"); //Нашли заголовок
-  cardTitle.textContent = cardContent.name;
+console.log(newCardForm);
 
-  const deleteButton = cardElement.querySelector(".card__delete-button"); //Нашли кнопку с удалением
-  deleteButton.addEventListener("click", function (evt) {
-    callbackDeleteElement(evt.target.parentElement);
-  });
+function createCard(cardData, onDeleteCard, onLikeCard, openImagePopup) {
+  const copyCard = cardTemplate.querySelector(".card").cloneNode(true); //Сделали копию карточки
+  const cardImage = copyCard.querySelector(".card__image"); //Нашли картинку
+  const cardTitle = copyCard.querySelector(".card__title"); //Нашли заголовок
+  const cardDeleteButton = copyCard.querySelector(".card__delete-button"); //Нашли кнопку с удалением
+  const cardLikeButton = copyCard.querySelector(".card__like-button"); //Нашли кнопку для лайков
 
-  cardElement.querySelector(".card__like-button").addEventListener(
-    "click",
-    function (e) {
-      e.target.classList.toggle("card__like-button_is-active");
-    },
-    { once: true }
-  );
+  cardTitle.textContent = cardData.name; //Имя картинки
+  cardImage.src = cardData.link; //Ссылка на картинку
+  cardImage.alt = cardData.name; //Alt на картинку, такой же как Имя
 
-  return cardElement;
+  cardDeleteButton.addEventListener('click', () => onDeleteCard(copyCard));
+  cardLikeButton.addEventListener('click', () => onLikeCard(copyCard));
+  cardImage.addEventListener('click', () => openImagePopup(copyCard));
+
+  return copyCard;
 }
+
+
+
+
+
+
+
+
+
+
 
 function showSelectedIMG(curentPopup, currentCardIMG, currentCardTitle) {
   curentPopup.querySelector(".popup__image").src = currentCardIMG;
@@ -66,32 +79,31 @@ function updateProfileData(curentPopup) {
     document.querySelector(".profile__title").textContent = new_user_title;
     document.querySelector(".profile__description").textContent =
       new_user_description;
-    curentPopup.classList.remove("popup_is-opened");
+    closePopup(curentPopup);
   });
 }
 
+/*
 function addUserCard(curentPopup, placesList) {
-  curentPopup.querySelector('input[name="place-name"]').value = "";
-  curentPopup.querySelector('input[name="link"]').value = "";
-  curentPopup.addEventListener(
-    "submit",
-    function (e) {
-      e.preventDefault();
-      const newCard = {};
-      const $_placeName = document.forms["new-place"]["place-name"].value;
-      const $_link = document.forms["new-place"].link.value;
+  //closePopUpByButton(curentPopup);
+  //closePopUpByESC(curentPopup);
+  //closePopUpByOverlay(curentPopup);
 
-      (newCard.name = $_placeName),
-        (newCard.link = $_link),
-        placesList.prepend(createCard(newCard, deleteElement));
+  
+  const $_placeName = newCardForm["place-name"].value; //Значение имени из формы новая карточка
+  const $_link = newCardForm.link.value; //Значение ссылки из формы новая карточка
 
-      curentPopup.classList.remove("popup_is-opened");
-    },
-    { once: true }
-  );
+  console.log($_placeName)
+
+  newCardForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const newCard = {};
+
+    newCard.name = $_placeName;
+    newCard.link = $_link;
+
+    placesList.prepend(createCard(newCard, func_deleteElement));
+    closePopup(curentPopup);
+  });
 }
-
-//4. Обработка удаления указанного элемента
-function deleteElement(element) {
-  element.remove();
-}
+*/
