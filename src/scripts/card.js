@@ -1,24 +1,17 @@
 import { onDeleteCard } from "../index.js";
 
 export {
-  showSelectedIMG,
   createCard,
   loadProfileData,
   updateProfileData,
 };
 
 import {
-  closePopUpByButton,
-  closePopUpByESC,
-  closePopUpByOverlay,
-  openPopup,
   closePopup,
 } from "./modal.js";
 
 const cardTemplate = document.querySelector("#card-template").content; //Макет под карточки
 const newCardForm = document.forms["new-place"]; //Форма в новой карточке
-
-console.log(newCardForm);
 
 function createCard(cardData, onDeleteCard, onLikeCard, openImagePopup) {
   const copyCard = cardTemplate.querySelector(".card").cloneNode(true); //Сделали копию карточки
@@ -36,21 +29,6 @@ function createCard(cardData, onDeleteCard, onLikeCard, openImagePopup) {
   cardImage.addEventListener('click', () => openImagePopup(copyCard));
 
   return copyCard;
-}
-
-
-
-
-
-
-
-
-
-
-
-function showSelectedIMG(curentPopup, currentCardIMG, currentCardTitle) {
-  curentPopup.querySelector(".popup__image").src = currentCardIMG;
-  curentPopup.querySelector(".popup__caption").textContent = currentCardTitle;
 }
 
 //Функция подгрузки текущей информации в открытое окно по редактированию профиля
