@@ -1,9 +1,8 @@
 import { initialCards } from "./scripts/cards.js";
 import { createCard } from "./scripts/card.js";
-import { loadProfileData } from "./scripts/card.js";
-import { updateProfileData } from "./scripts/card.js";
 
 import { openPopup } from "./scripts/modal.js";
+import { closePopup } from "./scripts/modal.js";
 
 import "./pages/index.css";
 
@@ -11,15 +10,19 @@ export { onDeleteCard, openImagePopup };
 
 const placesList = document.querySelector(".places__list"); //Место куда вставляются карточки
 const profileEditButton = document.querySelector(".profile__edit-button"); //слушалка для редактирования профиля
+const profileAddButton = document.querySelector(".profile__add-button"); //Слушалка для создания карточки
 const popupImage = document.querySelector(".popup_type_image"); //Ищем модалку для картинок
 
-const formsTypeEdit = document.forms["edit-profile"]; //Ищем модалку для редактирования профиля
-const popupUserNameInput = formsTypeEdit.name; //Поле для имени в модалке
-const popupUserDescriptionInput = formsTypeEdit.description; //Поле для описания пользователя
-const currentUserName = document.querySelector(".profile__title"); //Текущее имя пользоваля
-const currentUserDescription = document.querySelector(".profile__description"); //Текущее описание профиля
+const formsTypeEdit = document.forms["edit-profile"]; 
+const popupUserNameInput = formsTypeEdit.name;
+const popupUserDescriptionInput = formsTypeEdit.description; 
+const currentUserName = document.querySelector(".profile__title");
+const currentUserDescription = document.querySelector(".profile__description"); 
 
-const popupNewCard = document.querySelector(".popup_type_new-card"); //Ищем модалку для новой карточки
+const formsNewCard = document.forms["edit-profile"];
+const popupNewPlace = formsNewCard["place-name"];
+const popupNewLink = formsNewCard.link;
+
 
 //console.log(popupUserDescriptionInput)
 
@@ -35,14 +38,16 @@ profileEditButton.addEventListener("click", function () {
   const $_curentPopup = document.querySelector(".popup_type_edit");
   popupUserNameInput.value = currentUserName.textContent;
   popupUserDescriptionInput.value = currentUserDescription.textContent;
+  modalFormClickListener($_curentPopup, saveUserDataFromPopupToPage, closePopup)
   openPopup($_curentPopup);
 });
 
 //Создание новой карточки
-const profileAddButton = document.querySelector(".profile__add-button");
-profileAddButton.addEventListener("click", function (e) {
+profileAddButton.addEventListener("click", function () {
   const $_curentPopup = document.querySelector(".popup_type_new-card");
-  resetUserData($_curentPopup);
+  modalFormClickListener($_curentPopup, formReset, closePopup)
+  formReset(formsNewCard);
+  openPopup($_curentPopup);
 });
 
 //Удаление элемента
@@ -64,15 +69,21 @@ function openImagePopup(cardData) {
 }
 
 //Слушалка на модальные формы
-function modalFormClickListener(curentForm, actionfunction){
-  curentForm.addEventListener("click", function(e){
-    console.log(e);
+function modalFormClickListener(curentForm, actionfunction, closePopup){
+  curentForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    actionfunction();
+    closePopup(e.target.closest(".popup_type_edit"));
   })
 }
 
-
-//Отправляем данные на форму
+//Выводим новые данные пользователя на страницу
 function saveUserDataFromPopupToPage(){
   currentUserName.textContent = popupUserNameInput.value;
   currentUserDescription.textContent = popupUserDescriptionInput.value
+}
+
+//Сброс формы в Default
+function formReset(curentForm){
+  curentForm.reset();
 }
