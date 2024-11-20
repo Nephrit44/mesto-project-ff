@@ -1,5 +1,5 @@
 import { initialCards } from "./scripts/cards.js";
-import { createCard } from "./scripts/card.js";
+import { createCard, onLikeCard } from "./scripts/card.js";
 
 import { openPopup, closePopup, popupCloseButton, popupCloseByESC, popupCloseByOverlay } from "./scripts/modal.js";
 
@@ -73,12 +73,6 @@ function onDeleteCard(element) {
   element.remove();
 }
 
-//Для лайкания карточки
-function onLikeCard(copyCard) {
-  copyCard
-    .querySelector(".card__like-button")
-    .classList.toggle("card__like-button_is-active");
-}
 
 //Для увеличения карточки
 function openImagePopup(cardData) {

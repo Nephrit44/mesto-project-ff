@@ -2,8 +2,7 @@ import { onDeleteCard } from "../index.js";
 
 export {
   createCard,
-  loadProfileData,
-  updateProfileData,
+  onLikeCard
 };
 
 import {
@@ -59,4 +58,11 @@ function updateProfileData(curentPopup) {
       new_user_description;
     closePopup(curentPopup);
   });
+}
+
+//Для лайкания карточки
+function onLikeCard(copyCard) {
+  copyCard
+    .querySelector(".card__like-button")
+    .classList.toggle("card__like-button_is-active");
 }
