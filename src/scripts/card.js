@@ -60,28 +60,3 @@ function updateProfileData(curentPopup) {
     closePopup(curentPopup);
   });
 }
-
-/*
-function addUserCard(curentPopup, placesList) {
-  //closePopUpByButton(curentPopup);
-  //closePopUpByESC(curentPopup);
-  //closePopUpByOverlay(curentPopup);
-
-  
-  const $_placeName = newCardForm["place-name"].value; //Значение имени из формы новая карточка
-  const $_link = newCardForm.link.value; //Значение ссылки из формы новая карточка
-
-  console.log($_placeName)
-
-  newCardForm.addEventListener("submit", function (e) {
-    e.preventDefault();
-    const newCard = {};
-
-    newCard.name = $_placeName;
-    newCard.link = $_link;
-
-    placesList.prepend(createCard(newCard, func_deleteElement));
-    closePopup(curentPopup);
-  });
-}
-*/
