@@ -108,9 +108,3 @@ function createNewUserCard(){
     createCard(newCardObject, onDeleteCard, onLikeCard, openImagePopup)
   );
 }
-
-//Функция подгрузки текущей информации в открытое окно по редактированию профиля
-function loadProfileData(curentPopup) {
-  curentPopup.querySelector('input[name="name"]').value = currentUserName.textContent;
-  curentPopup.querySelector('input[name="description"]').value = currentUserDescription.textContent;
-}
