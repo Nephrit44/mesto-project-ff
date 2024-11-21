@@ -1,5 +1,5 @@
 
-export { createCard, updateProfileData, onLikeCard, onDeleteCard };
+export { createCard, onLikeCard, onDeleteCard };
 
 const cardTemplate = document.querySelector("#card-template").content; //Макет под карточки
 
@@ -12,39 +12,18 @@ function createCard(cardData, onDeleteCard, onLikeCard, openImagePopup) {
 
   cardTitle.textContent = cardData.name; //Имя картинки
   cardImage.src = cardData.link; //Ссылка на картинку
-  cardImage.alt = cardData.name; //Alt на картинку, такой же как Имя
+  cardImage.alt = cardData.name; //Альтернативное описание картинки
 
   cardDeleteButton.addEventListener('click', () => onDeleteCard(copyCard));
-  cardLikeButton.addEventListener('click', () => onLikeCard(copyCard));
+  cardLikeButton.addEventListener('click', () => onLikeCard(cardLikeButton));
   cardImage.addEventListener('click', () => openImagePopup(copyCard));
 
   return copyCard;
 }
 
-function updateProfileData(curentPopup) {
-  /*
-    1. Слушаем кнопку и реагируем на неё
-    2. Получаем информация о input в текущем окне c помощью form
-    3. Обновляем данные на страничке
-    4. Закрываем форму
-    */
-  curentPopup.addEventListener("submit", function (e) {
-    e.preventDefault();
-    const new_user_title = document.forms["edit-profile"].name.value;
-    const new_user_description =
-      document.forms["edit-profile"].description.value;
-    document.querySelector(".profile__title").textContent = new_user_title;
-    document.querySelector(".profile__description").textContent =
-      new_user_description;
-    closePopup(curentPopup);
-  });
-}
-
 //Для лайкания карточки
-function onLikeCard(copyCard) {
-  copyCard
-    .querySelector(".card__like-button")
-    .classList.toggle("card__like-button_is-active");
+function onLikeCard(cardLikeButton) {
+  cardLikeButton.classList.toggle("card__like-button_is-active");
 }
 
 //Удаление элемента
