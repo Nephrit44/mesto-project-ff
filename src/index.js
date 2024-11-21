@@ -1,48 +1,48 @@
 import { initialCards } from "./scripts/cards.js";
-import { createCard, onLikeCard } from "./scripts/card.js";
-
-import { openPopup, closePopup, popupCloseButton, popupCloseByESC, popupCloseByOverlay } from "./scripts/modal.js";
-
+import { createCard, onLikeCard, onDeleteCard } from "./scripts/card.js";
+import { openPopup, closePopup, popupCloseByOverlay } from "./scripts/modal.js";
 import "./pages/index.css";
 
-export { onDeleteCard, openImagePopup };
+export {  openImagePopup };
 //Общие переменные
 const placesList = document.querySelector(".places__list"); //Место куда вставляются карточки
 const profileEditButton = document.querySelector(".profile__edit-button"); //Кнопка редактирование профиля
 const newCardAddButton = document.querySelector(".profile__add-button"); //Кнопка создание карточки
 
 //Модалка увеличение картинки
-const popupImage = document.querySelector(".popup_type_image"); //Модалка для показа увеличенной картинки
-addAnimated(popupImage);
-popupCloseByESC(popupImage);
-popupCloseByOverlay(popupImage);
-const popupImageCloseButton = popupImage.querySelector(".popup__close"); //Кнопка закрытия окна с увеличенной картинкой
-popupCloseButton(popupImageCloseButton, popupImage);
+const popupImageForm = document.querySelector(".popup_type_image"); //Окно показа увеличенной картинки
+const popupImageFormCloseButton = popupImageForm.querySelector(".popup__close"); //Кнопка закрытия окна с увеличенной картинкой
+const popupImageTitle = popupImageForm.querySelector(".popup__caption").textContent; //Место для описания в модальном окне
+const popupImagePreview = popupImageForm.querySelector(".popup__image").src; //Место на ссылку в модальном окне
+const popupImageLink = popupImageForm.querySelector(".popup__image").alt; // Место для Альтернативного описания в модальном окне
+
+addAnimated(popupImageForm); //Анимация на окно
+popupCloseByOverlay(popupImageForm); //Закрытия окна по оверлею
+popupImageFormCloseButton.addEventListener("click", function(){closePopup(popupImageForm)}); //Закрытие окна по крестику
 
 //Модалка редактирование профиля
-const popupEditProfile = document.querySelector(".popup_type_edit");//Модалка для редактирования профиля
-addAnimated(popupEditProfile);
-popupCloseByESC(popupEditProfile);
-popupCloseByOverlay(popupEditProfile);
+const popupEditProfile = document.querySelector(".popup_type_edit");  //Окно редактирования профиля
+const formsTypeEdit = document.forms["edit-profile"]; //Форма редактирования профиля
 const popupProfileCloseButton = popupEditProfile.querySelector(".popup__close"); //Кнопка закрытия окна редактирвоания профиля
-popupCloseButton(popupProfileCloseButton, popupEditProfile);
-
-const formsTypeEdit = document.forms["edit-profile"];
-const popupUserNameInput = formsTypeEdit.name;
-const popupUserDescriptionInput = formsTypeEdit.description;
-const currentUserName = document.querySelector(".profile__title");
-const currentUserDescription = document.querySelector(".profile__description");
+const popupUserNameInput = formsTypeEdit.name; //Новое имя профиля
+const popupUserDescriptionInput = formsTypeEdit.description; //новое описание профиля
+const currentUserName = document.querySelector(".profile__title"); //Текущее имя профиля
+const currentUserDescription = document.querySelector(".profile__description"); //Текущее описание профиля
+addAnimated(popupEditProfile); //Анимация на окно
+popupCloseByOverlay(popupEditProfile); //Закрытия окна по оверлею
+modalFormClickListener(formsTypeEdit, saveUserDataFromPopupToPage); //Submit в окне редактивароя профиля
+popupProfileCloseButton.addEventListener("click", function(){closePopup(popupEditProfile)}); //Закрытие окна по крестику
 
 //Модалка новая карточка
 const popupNewCard = document.querySelector(".popup_type_new-card");//Модалка для редактирования профиля
-addAnimated(popupNewCard);
-popupCloseByESC(popupNewCard);
-popupCloseByOverlay(popupNewCard);
-const popupNewCardCloseButton = popupNewCard.querySelector(".popup__close"); //Кнопка закрытия окна редактирвоания профиля
-popupCloseButton(popupNewCardCloseButton, popupNewCard);
-const formsNewCard = document.forms["new-place"];
-const popupNewPlaceInput = formsNewCard["place-name"];
-const popupNewLinkInput = formsNewCard.link;
+const popupNewCardCloseButton = popupNewCard.querySelector(".popup__close"); //Кнопка закрытия окна создания новой карточки
+const formsNewCard = document.forms["new-place"]; //Форма создания новой карточки
+const popupNewPlaceInput = formsNewCard["place-name"]; //Название новой карточки
+const popupNewLinkInput = formsNewCard.link; //Ссылка на изображение для карточки
+addAnimated(popupNewCard); //Анимация на окно
+popupCloseByOverlay(popupNewCard); //Закрытия окна по оверлею
+modalFormClickListener(popupNewCard, createNewUserCard); //Submit в окне новая карточка
+popupNewCardCloseButton.addEventListener("click", function(){closePopup(popupNewCard)}); //Закрытие окна по крестику
 
 //Загрузка списка карточек из базы
 initialCards.forEach((cardData) => {
@@ -53,36 +53,23 @@ initialCards.forEach((cardData) => {
 
 //Слушалка нажатия на редактирование профиля
 profileEditButton.addEventListener("click", function () {
-  const $_curentPopup = document.querySelector(".popup_type_edit");
   popupUserNameInput.value = currentUserName.textContent;
   popupUserDescriptionInput.value = currentUserDescription.textContent;
-  modalFormClickListener($_curentPopup, saveUserDataFromPopupToPage);
-  openPopup($_curentPopup);
+  openPopup(popupEditProfile);
 });
 
 //Создание новой карточки
 newCardAddButton.addEventListener("click", function () {
-  const $_curentPopup = document.querySelector(".popup_type_new-card");
   formReset();
-  modalFormClickListener($_curentPopup, createNewUserCard);
-  openPopup($_curentPopup);
+  openPopup(popupNewCard);
 });
-
-//Удаление элемента
-function onDeleteCard(element) {
-  element.remove();
-}
-
 
 //Для увеличения карточки
 function openImagePopup(cardData) {
-  popupImage.querySelector(".popup__image").src =
-    cardData.querySelector(".card__image").src;
-  popupImage.querySelector(".popup__image").alt =
-    cardData.querySelector(".card__title").textContent;
-  popupImage.querySelector(".popup__caption").textContent =
-    cardData.querySelector(".card__title").textContent;
-  openPopup(popupImage);
+  popupImageTitle = cardData.querySelector(".card__title").textContent;
+  popupImagePreview = cardData.querySelector(".card__title").textContent;
+  popupImageLink = cardData.querySelector(".card__image").src;
+  openPopup(popupImageForm);
 }
 
 //Слушалка на модальные формы
@@ -98,6 +85,7 @@ function modalFormClickListener(curentForm, actionFunction) {
 function saveUserDataFromPopupToPage() {
   currentUserName.textContent = popupUserNameInput.value;
   currentUserDescription.textContent = popupUserDescriptionInput.value;
+  closePopup(popupEditProfile);
 }
 
 //Сброс формы в Default
@@ -119,4 +107,10 @@ function createNewUserCard(){
   placesList.prepend(
     createCard(newCardObject, onDeleteCard, onLikeCard, openImagePopup)
   );
+}
+
+//Функция подгрузки текущей информации в открытое окно по редактированию профиля
+function loadProfileData(curentPopup) {
+  curentPopup.querySelector('input[name="name"]').value = currentUserName.textContent;
+  curentPopup.querySelector('input[name="description"]').value = currentUserDescription.textContent;
 }

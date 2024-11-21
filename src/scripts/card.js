@@ -1,16 +1,7 @@
-import { onDeleteCard } from "../index.js";
 
-export {
-  createCard,
-  onLikeCard
-};
-
-import {
-  closePopup,
-} from "./modal.js";
+export { createCard, updateProfileData, onLikeCard, onDeleteCard };
 
 const cardTemplate = document.querySelector("#card-template").content; //Макет под карточки
-const newCardForm = document.forms["new-place"]; //Форма в новой карточке
 
 function createCard(cardData, onDeleteCard, onLikeCard, openImagePopup) {
   const copyCard = cardTemplate.querySelector(".card").cloneNode(true); //Сделали копию карточки
@@ -28,17 +19,6 @@ function createCard(cardData, onDeleteCard, onLikeCard, openImagePopup) {
   cardImage.addEventListener('click', () => openImagePopup(copyCard));
 
   return copyCard;
-}
-
-//Функция подгрузки текущей информации в открытое окно по редактированию профиля
-function loadProfileData(curentPopup) {
-  const profTitle = document.querySelector(".profile__title").textContent;
-  const profDescrition = document.querySelector(
-    ".profile__description"
-  ).textContent;
-
-  curentPopup.querySelector('input[name="name"]').value = profTitle;
-  curentPopup.querySelector('input[name="description"]').value = profDescrition;
 }
 
 function updateProfileData(curentPopup) {
@@ -65,4 +45,9 @@ function onLikeCard(copyCard) {
   copyCard
     .querySelector(".card__like-button")
     .classList.toggle("card__like-button_is-active");
+}
+
+//Удаление элемента
+function onDeleteCard(element) {
+  element.remove();
 }

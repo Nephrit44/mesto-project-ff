@@ -1,36 +1,28 @@
-export { openPopup, closePopup, popupCloseButton, popupCloseByESC, popupCloseByOverlay};
+export { openPopup, closePopup, popupCloseByOverlay, closingPopupPressingEsc };
 
-//Открытие указанного попапа
-function openPopup(curentPopup) {
-  curentPopup.classList.add("popup_is-opened"); 
+
+// функция открытия модального окна
+function openPopup(popup) {
+  popup.classList.add("popup_is-opened");
+  document.addEventListener("keydown", closingPopupPressingEsc);
 }
-
-function closePopup(curentPopup) {
-  curentPopup.classList.remove("popup_is-opened");
-  curentPopup.removeEventListener("click", openPopup);
+// функция закрытия модального окна
+function closePopup(popup) {
+  popup.classList.remove("popup_is-opened");
+  document.removeEventListener("keydown", closingPopupPressingEsc);
 }
-
-//Кнопка закрытия окна 
-function popupCloseButton(button, openedForm){
-  button.addEventListener("click", function(){
-    closePopup(openedForm);
-  });
-}
-
-//Закрытие по ESC
-function popupCloseByESC(openedForm){
-  document.addEventListener("keydown", function(e){
-    if (e.key == "Escape") {
-      closePopup(openedForm);
-    }
-  });
-}
-
-//Закрытие по оверлею
-function popupCloseByOverlay(openedForm){
-  openedForm.addEventListener("click", function(e){
+// функция-обработчик события клика по оверлею
+function popupCloseByOverlay(popup) {
+  popup.addEventListener("click", function(e){
     if(e.target.classList.contains("popup_is-opened")){
-      closePopup(openedForm);
+      closePopup(popup);
     }
   });
 }
+// функция-обработчик события нажатия Esc
+function closingPopupPressingEsc(e) {
+  if (e.key === "Escape") {
+    const popup = document.querySelector(".popup_is-opened");
+    closePopup(popup);
+  }
+} 
