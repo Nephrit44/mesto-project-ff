@@ -16,7 +16,7 @@ function createCard(cardData, onDeleteCard, onLikeCard, openImagePopup) {
 
   cardDeleteButton.addEventListener('click', () => onDeleteCard(copyCard));
   cardLikeButton.addEventListener('click', () => onLikeCard(cardLikeButton));
-  cardImage.addEventListener('click', () => openImagePopup(copyCard));
+  cardImage.addEventListener('click', () => openImagePopup(cardData));
 
   return copyCard;
 }

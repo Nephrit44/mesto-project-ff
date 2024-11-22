@@ -12,9 +12,9 @@ const newCardAddButton = document.querySelector(".profile__add-button"); //Кн�
 //Модалка увеличение картинки
 const popupImageForm = document.querySelector(".popup_type_image"); //Окно показа увеличенной картинки
 const popupImageFormCloseButton = popupImageForm.querySelector(".popup__close"); //Кнопка закрытия окна с увеличенной картинкой
-const popupImageTitle = popupImageForm.querySelector(".popup__caption").textContent; //Место для описания в модальном окне
-const popupImagePreview = popupImageForm.querySelector(".popup__image").src; //Место на ссылку в модальном окне
-const popupImageLink = popupImageForm.querySelector(".popup__image").alt; // Место для Альтернативного описания в модальном окне
+
+const popupImageTitle = popupImageForm.querySelector(".popup__caption");  //Место для описания в модальном окне
+const popupImageLink = popupImageForm.querySelector(".popup__image"); //Место на ссылку в модальном окне
 
 addAnimated(popupImageForm); //Анимация на окно
 popupCloseByOverlay(popupImageForm); //Закрытия окна по оверлею
@@ -30,7 +30,7 @@ const currentUserName = document.querySelector(".profile__title"); //Текущ�
 const currentUserDescription = document.querySelector(".profile__description"); //Текущее описание профиля
 addAnimated(popupEditProfile); //Анимация на окно
 popupCloseByOverlay(popupEditProfile); //Закрытия окна по оверлею
-modalFormClickListener(formsTypeEdit, saveUserDataFromPopupToPage); //Submit в окне редактивароя профиля
+modalFormClickListener(formsTypeEdit, popupEditProfile, saveUserDataFromPopupToPage); //Submit в окне редактивароя профиля
 popupProfileCloseButton.addEventListener("click", function(){closePopup(popupEditProfile)}); //Закрытие окна по крестику
 
 //Модалка новая карточка
@@ -41,7 +41,7 @@ const popupNewPlaceInput = formsNewCard["place-name"]; //Название нов
 const popupNewLinkInput = formsNewCard.link; //Ссылка на изображение для карточки
 addAnimated(popupNewCard); //Анимация на окно
 popupCloseByOverlay(popupNewCard); //Закрытия окна по оверлею
-modalFormClickListener(popupNewCard, createNewUserCard); //Submit в окне новая карточка
+modalFormClickListener(formsNewCard, popupNewCard, createNewUserCard); //Submit в окне новая карточка
 popupNewCardCloseButton.addEventListener("click", function(){closePopup(popupNewCard)}); //Закрытие окна по крестику
 
 //Загрузка списка карточек из базы
@@ -60,24 +60,25 @@ profileEditButton.addEventListener("click", function () {
 
 //Создание новой карточки
 newCardAddButton.addEventListener("click", function () {
-  formReset();
+  formNewCardReset();
   openPopup(popupNewCard);
 });
 
 //Для увеличения карточки
 function openImagePopup(cardData) {
-  popupImageTitle = cardData.querySelector(".card__title").textContent;
-  popupImagePreview = cardData.querySelector(".card__title").textContent;
-  popupImageLink = cardData.querySelector(".card__image").src;
+  
+  popupImageTitle.textContent = cardData.name;
+  popupImageLink.src = cardData.link;
+  popupImageLink.alt = cardData.name;
   openPopup(popupImageForm);
 }
 
 //Слушалка на модальные формы
-function modalFormClickListener(curentForm, actionFunction) {
+function modalFormClickListener(curentForm, curentModalWindow, actionFunction) {
   curentForm.addEventListener("submit", function (e) {
     e.preventDefault();
     actionFunction();
-    closePopup(curentForm);
+    closePopup(curentModalWindow);
   });
 }
 
@@ -89,7 +90,7 @@ function saveUserDataFromPopupToPage() {
 }
 
 //Сброс формы в Default
-function formReset() {
+function formNewCardReset() {
   formsNewCard.reset();
 }
 
