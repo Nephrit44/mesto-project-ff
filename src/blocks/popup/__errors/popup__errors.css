@@ -1,0 +1,13 @@
+.form__input-error {
+  display: flex;
+  color: #f00;
+  font-family: Inter;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.form__input-error:last-of-type {
+  margin-top: 5px;
+}

@@ -47,6 +47,7 @@
           <button type="button" class="popup__close"></button>
           <h3 class="popup__title">Редактировать профиль</h3>
           <form class="popup__form" name="edit-profile">
+            <label class="form__field">
             <input
               type="text"
               name="name"
@@ -54,13 +55,18 @@
               placeholder="Имя"
               required
             />
-            <input
-              type="text"
-              name="description"
-              class="popup__input popup__input_type_description"
-              placeholder="Занятие"
-              required
-            />
+            <span class="form__input-error name-input-error"></span>
+          </label>
+            <label class="form__field">
+              <input
+                type="text"
+                name="description"
+                class="popup__input popup__input_type_description"
+                placeholder="Занятие"
+                required
+              />
+              <span class="form__input-error description-input-error"></span>
+            </label>
             <button type="submit" class="button popup__button">
               Сохранить
             </button>
@@ -73,20 +79,26 @@
           <button type="button" class="popup__close"></button>
           <h3 class="popup__title">Новое место</h3>
           <form class="popup__form" name="new-place">
-            <input
-              type="text"
-              name="place-name"
-              class="popup__input popup__input_type_card-name"
-              placeholder="Название"
-              required
-            />
-            <input
-              type="url"
-              name="link"
-              class="popup__input popup__input_type_url"
-              placeholder="Ссылка на картинку"
-              required
-            />
+            <label class="form__field">
+              <input
+                type="text"
+                name="place-name"
+                class="popup__input popup__input_type_card-name"
+                placeholder="Название"
+                required
+              />
+              <span class="form__input-error description-input-error"></span>
+            </label>
+            <label class="form__field">
+              <input
+                type="url"
+                name="link"
+                class="popup__input popup__input_type_url"
+                placeholder="Ссылка на картинку"
+                required
+              />
+              <span class="form__input-error description-input-error"></span>
+            </label>
             <button type="submit" class="button popup__button">
               Сохранить
             </button>
@@ -113,6 +125,5 @@
         </div>
       </li>
     </template>
-
   </body>
 </html>
