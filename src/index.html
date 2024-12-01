@@ -45,22 +45,27 @@
       <div class="popup popup_type_edit">
         <div class="popup__content">
           <button type="button" class="popup__close"></button>
+
           <h3 class="popup__title">Редактировать профиль</h3>
+
           <form class="popup__form" name="edit-profile">
             <label class="form__field">
-            <input
-              type="text"
-              name="name"
-              class="popup__input popup__input_type_name"
-              placeholder="Имя"
-              minlength="2"
-              maxlength="40"
-              required
-            />
-            <span class="form__input-error name-input-error"></span>
-          </label>
+              <input
+                id="name-input"
+                type="text"
+                name="name"
+                class="popup__input popup__input_type_name"
+                placeholder="Имя"
+                minlength="2"
+                maxlength="40"
+                required
+              />
+              <span class="form__input-error name-input-error"></span>
+            </label>
+
             <label class="form__field">
               <input
+                id="description-input"
                 type="text"
                 name="description"
                 class="popup__input popup__input_type_description"
@@ -81,10 +86,14 @@
       <div class="popup popup_type_new-card">
         <div class="popup__content">
           <button type="button" class="popup__close"></button>
+
           <h3 class="popup__title">Новое место</h3>
+
           <form class="popup__form" name="new-place">
+
             <label class="form__field">
               <input
+                id="cardName-input"
                 type="text"
                 name="place-name"
                 class="popup__input popup__input_type_card-name"
@@ -93,17 +102,19 @@
                 maxlength="30"
                 required
               />
-              <span class="form__input-error description-input-error"></span>
+              <span class="form__input-error cardName-input-error"></span>
             </label>
+
             <label class="form__field">
               <input
+                id="cardURL-input"
                 type="url"
                 name="link"
                 class="popup__input popup__input_type_url"
                 placeholder="Ссылка на картинку"
                 required
               />
-              <span class="form__input-error description-input-error"></span>
+              <span class="form__input-error cardURL-input-error"></span>
             </label>
             <button type="submit" class="button popup__button">
               Сохранить
