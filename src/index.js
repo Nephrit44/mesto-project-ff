@@ -3,7 +3,7 @@ import { createCard, onLikeCard, onDeleteCard } from "./scripts/card.js";
 import { openPopup, closePopup, popupCloseByOverlay } from "./scripts/modal.js";
 import "./pages/index.css";
 
-export {  openImagePopup };
+export { openImagePopup };
 //Общие переменные
 const placesList = document.querySelector(".places__list"); //Место куда вставляются карточки
 const profileEditButton = document.querySelector(".profile__edit-button"); //Кнопка редактирование профиля
@@ -13,15 +13,17 @@ const newCardAddButton = document.querySelector(".profile__add-button"); //Кн�
 const popupImageForm = document.querySelector(".popup_type_image"); //Окно показа увеличенной картинки
 const popupImageFormCloseButton = popupImageForm.querySelector(".popup__close"); //Кнопка закрытия окна с увеличенной картинкой
 
-const popupImageTitle = popupImageForm.querySelector(".popup__caption");  //Место для описания в модальном окне
+const popupImageTitle = popupImageForm.querySelector(".popup__caption"); //Место для описания в модальном окне
 const popupImageLink = popupImageForm.querySelector(".popup__image"); //Место на ссылку в модальном окне
 
 addAnimated(popupImageForm); //Анимация на окно
 popupCloseByOverlay(popupImageForm); //Закрытия окна по оверлею
-popupImageFormCloseButton.addEventListener("click", function(){closePopup(popupImageForm)}); //Закрытие окна по крестику
+popupImageFormCloseButton.addEventListener("click", function () {
+  closePopup(popupImageForm);
+}); //Закрытие окна по крестику
 
 //Модалка редактирование профиля
-const popupEditProfile = document.querySelector(".popup_type_edit");  //Окно редактирования профиля
+const popupEditProfile = document.querySelector(".popup_type_edit"); //Окно редактирования профиля
 const formsTypeEdit = document.forms["edit-profile"]; //Форма редактирования профиля
 const popupProfileCloseButton = popupEditProfile.querySelector(".popup__close"); //Кнопка закрытия окна редактирвоания профиля
 const popupUserNameInput = formsTypeEdit.name; //Новое имя профиля
@@ -30,11 +32,17 @@ const currentUserName = document.querySelector(".profile__title"); //Текущ�
 const currentUserDescription = document.querySelector(".profile__description"); //Текущее описание профиля
 addAnimated(popupEditProfile); //Анимация на окно
 popupCloseByOverlay(popupEditProfile); //Закрытия окна по оверлею
-modalFormClickListener(formsTypeEdit, popupEditProfile, saveUserDataFromPopupToPage); //Submit в окне редактивароя профиля
-popupProfileCloseButton.addEventListener("click", function(){closePopup(popupEditProfile)}); //Закрытие окна по крестику
+modalFormClickListener(
+  formsTypeEdit,
+  popupEditProfile,
+  saveUserDataFromPopupToPage
+); //Submit в окне редактивароя профиля
+popupProfileCloseButton.addEventListener("click", function () {
+  closePopup(popupEditProfile);
+}); //Закрытие окна по крестику
 
 //Модалка новая карточка
-const popupNewCard = document.querySelector(".popup_type_new-card");//Модалка для редактирования профиля
+const popupNewCard = document.querySelector(".popup_type_new-card"); //Модалка для редактирования профиля
 const popupNewCardCloseButton = popupNewCard.querySelector(".popup__close"); //Кнопка закрытия окна создания новой карточки
 const formsNewCard = document.forms["new-place"]; //Форма создания новой карточки
 const popupNewPlaceInput = formsNewCard["place-name"]; //Название новой карточки
@@ -42,7 +50,9 @@ const popupNewLinkInput = formsNewCard.link; //Ссылка на изображ�
 addAnimated(popupNewCard); //Анимация на окно
 popupCloseByOverlay(popupNewCard); //Закрытия окна по оверлею
 modalFormClickListener(formsNewCard, popupNewCard, createNewUserCard); //Submit в окне новая карточка
-popupNewCardCloseButton.addEventListener("click", function(){closePopup(popupNewCard)}); //Закрытие окна по крестику
+popupNewCardCloseButton.addEventListener("click", function () {
+  closePopup(popupNewCard);
+}); //Закрытие окна по крестику
 
 //Загрузка списка карточек из базы
 initialCards.forEach((cardData) => {
@@ -66,7 +76,6 @@ newCardAddButton.addEventListener("click", function () {
 
 //Для увеличения карточки
 function openImagePopup(cardData) {
-  
   popupImageTitle.textContent = cardData.name;
   popupImageLink.src = cardData.link;
   popupImageLink.alt = cardData.name;
@@ -95,16 +104,16 @@ function formNewCardReset() {
 }
 
 //Добавление стиля с плавностями
-function addAnimated(form){
+function addAnimated(form) {
   form.classList.add("popup_is-animated");
 }
 
 //Создание пользовательской карточки
-function createNewUserCard(){
+function createNewUserCard() {
   const newCardObject = {
     name: popupNewPlaceInput.value,
-    link: popupNewLinkInput.value
-  }
+    link: popupNewLinkInput.value,
+  };
   placesList.prepend(
     createCard(newCardObject, onDeleteCard, onLikeCard, openImagePopup)
   );
@@ -128,48 +137,64 @@ const showInputError = (formElement, inputElement, errorMessage) => {
   // Находим элемент ошибки внутри самой функции
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
   // Остальной код такой же
-  inputElement.classList.add('form__input-error');
+  inputElement.classList.add("form__input-error");
   errorElement.textContent = errorMessage;
-  errorElement.classList.add('form__input-error_active');
+  errorElement.classList.add("form__input-error_active");
 };
 
 const hideInputError = (formElement, inputElement) => {
   // Находим элемент ошибки
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
   // Остальной код такой же
-  inputElement.classList.remove('form__input-error');
-  errorElement.classList.remove('form__input-error_active');
-  errorElement.textContent = '';
-}; 
+  inputElement.classList.remove("form__input-error");
+  errorElement.classList.remove("form__input-error_active");
+  errorElement.textContent = "";
+};
 
-const setEventListeners = (formElement) => {
-  // Находим все поля внутри формы,
-  // сделаем из них массив методом Array.from
-  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
+const setEventListeners = (options, formElement) => {
+  const inputList = Array.from(formElement.querySelectorAll(options.inputSelector));
 
   // Обойдём все элементы полученной коллекции
   inputList.forEach((inputElement) => {
     // каждому полю добавим обработчик события input
-    inputElement.addEventListener('input', () => {
+    inputElement.addEventListener("input", () => {
       // Внутри колбэка вызовем isValid,
       // передав ей форму и проверяемый элемент
-      isValid(formElement, inputElement)
+      isValid(formElement, inputElement);
+      //Вешаем проверку на латиницу и кириллицу
+      chekRegular(inputElement.value);
     });
   });
-}; 
+};
 
-const enableValidation = () => {
-  // Найдём все формы с указанным классом в DOM,
-  // сделаем из них массив методом Array.from
-  const formList = Array.from(document.querySelectorAll('.popup__form'));
+//Поиск форм
+const enableValidation = (options) => {
+  const formList = Array.from(document.querySelectorAll(options.formSelector));
 
   // Переберём полученную коллекцию
   formList.forEach((formElement) => {
     // Для каждой формы вызовем функцию setEventListeners,
     // передав ей элемент формы
-    setEventListeners(formElement);
+    setEventListeners(options, formElement);
   });
 };
 
-// Вызовем функцию
-enableValidation();
+function chekRegular(inputText) {
+  const regex = /[\wа-я\sё]/gi;
+
+  /* Ищем всю латиницу и всю кириллицу, все пробелы,
+а от знаков препинания избавляемся. */
+
+  console.log(inputText.match(regex));
+  
+}
+
+enableValidation({
+  formSelector: '.popup__form', //Формы в которых ищем
+  inputSelector: '.popup__input', //Инпуты в формах
+  submitButtonSelector: '.popup__button', //Кнопки submit
+  inactiveButtonClass: 'popup__button_disabled', //Кнопки submit в состоянии блокитровки
+  inputErrorClass: 'popup__input_type_error', 
+  errorClass: 'popup__error_visible'
+});
+
