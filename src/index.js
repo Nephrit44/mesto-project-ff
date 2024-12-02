@@ -121,7 +121,7 @@ function createNewUserCard() {
 
 //======================================== ВАЛИДАЦИЯ ========================================
 
-const isValid = (formElement, inputElement) => {
+const isValid = (options, formElement, inputElement) => {
   if (!inputElement.validity.valid) {
     // showInputError теперь получает параметром форму, в которой
     // находится проверяемое поле, и само это поле
@@ -131,6 +131,7 @@ const isValid = (formElement, inputElement) => {
     // находится проверяемое поле, и само это поле
     hideInputError(formElement, inputElement);
   }
+  setButtonSubmit(options, formElement, inputElement.validity.valid);
 };
 
 const showInputError = (formElement, inputElement, errorMessage) => {
@@ -151,19 +152,42 @@ const hideInputError = (formElement, inputElement) => {
   errorElement.textContent = "";
 };
 
-const setEventListeners = (options, formElement) => {
-  const inputList = Array.from(formElement.querySelectorAll(options.inputSelector));
+//Настройка Инпутов
+const setEvtListenersInput = (options, formElement) => {
+  const inputList = Array.from(
+    formElement.querySelectorAll(options.inputSelector)
+  );
 
-  // Обойдём все элементы полученной коллекции
   inputList.forEach((inputElement) => {
     // каждому полю добавим обработчик события input
     inputElement.addEventListener("input", () => {
       // Внутри колбэка вызовем isValid,
       // передав ей форму и проверяемый элемент
-      isValid(formElement, inputElement);
+      isValid(options, formElement, inputElement);
       //Вешаем проверку на латиницу и кириллицу
       chekRegular(inputElement.value);
     });
+  });
+};
+
+//Настройка кнопок Submit в зависимости от валидации
+const setButtonSubmit = (options, formElement, buttonStatus) => {
+  /*
+  options - входные параметры. Что будем искать
+  formElement - где будем искать
+  buttonStatus - текущее состояние относительно валидации
+  */
+  const buttonList = Array.from(
+    formElement.querySelectorAll(options.submitButtonSelector)
+  );
+
+  buttonList.forEach((buttonElement) => {
+    if (buttonStatus) {
+      buttonElement.classList.remove("popup__button_disabled");
+    } else {
+      buttonElement.classList.add("popup__button_disabled");
+    }
+    buttonElement.disabled = !buttonStatus;
   });
 };
 
@@ -171,11 +195,8 @@ const setEventListeners = (options, formElement) => {
 const enableValidation = (options) => {
   const formList = Array.from(document.querySelectorAll(options.formSelector));
 
-  // Переберём полученную коллекцию
   formList.forEach((formElement) => {
-    // Для каждой формы вызовем функцию setEventListeners,
-    // передав ей элемент формы
-    setEventListeners(options, formElement);
+    setEvtListenersInput(options, formElement);
   });
 };
 
@@ -186,15 +207,13 @@ function chekRegular(inputText) {
 а от знаков препинания избавляемся. */
 
   console.log(inputText.match(regex));
-  
 }
 
 enableValidation({
-  formSelector: '.popup__form', //Формы в которых ищем
-  inputSelector: '.popup__input', //Инпуты в формах
-  submitButtonSelector: '.popup__button', //Кнопки submit
-  inactiveButtonClass: 'popup__button_disabled', //Кнопки submit в состоянии блокитровки
-  inputErrorClass: 'popup__input_type_error', 
-  errorClass: 'popup__error_visible'
+  formSelector: ".popup__form", //Формы в которых ищем
+  inputSelector: ".popup__input", //Инпуты в формах
+  submitButtonSelector: ".popup__button", //Кнопки submit
+  inactiveButtonClass: "popup__button_disabled", //Кнопки submit в состоянии блокитровки
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
 });
-
