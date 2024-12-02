@@ -125,30 +125,30 @@ const isValid = (options, formElement, inputElement) => {
   if (!inputElement.validity.valid) {
     // showInputError теперь получает параметром форму, в которой
     // находится проверяемое поле, и само это поле
-    showInputError(formElement, inputElement, inputElement.validationMessage);
+    showInputError(options, formElement, inputElement, inputElement.validationMessage);
   } else {
     // hideInputError теперь получает параметром форму, в которой
     // находится проверяемое поле, и само это поле
-    hideInputError(formElement, inputElement);
+    hideInputError(options, formElement, inputElement);
   }
   setButtonSubmit(options, formElement, inputElement.validity.valid);
 };
 
-const showInputError = (formElement, inputElement, errorMessage) => {
+const showInputError = (options, formElement, inputElement, errorMessage) => {
   // Находим элемент ошибки внутри самой функции
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
   // Остальной код такой же
   inputElement.classList.add("form__input-error");
   errorElement.textContent = errorMessage;
-  errorElement.classList.add("form__input-error_active");
+  //errorElement.classList.add("form__input-error_active");
 };
 
-const hideInputError = (formElement, inputElement) => {
+const hideInputError = (options, formElement, inputElement) => {
   // Находим элемент ошибки
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
   // Остальной код такой же
   inputElement.classList.remove("form__input-error");
-  errorElement.classList.remove("form__input-error_active");
+  //errorElement.classList.remove("form__input-error_active");
   errorElement.textContent = "";
 };
 
@@ -165,7 +165,7 @@ const setEvtListenersInput = (options, formElement) => {
       // передав ей форму и проверяемый элемент
       isValid(options, formElement, inputElement);
       //Вешаем проверку на латиницу и кириллицу
-      chekRegular(inputElement.value);
+      console.log(chekRegular(inputElement.value))
     });
   });
 };
@@ -201,12 +201,8 @@ const enableValidation = (options) => {
 };
 
 function chekRegular(inputText) {
-  const regex = /[\wа-я\sё]/gi;
-
-  /* Ищем всю латиницу и всю кириллицу, все пробелы,
-а от знаков препинания избавляемся. */
-
-  console.log(inputText.match(regex));
+  const regex = /^[a-zа-яё\s\-]+$/i; //Все буквы РУС и ENG, тирешка и пробел
+  return regex.test(inputText);
 }
 
 enableValidation({
