@@ -121,17 +121,27 @@ function createNewUserCard() {
 
 //======================================== ВАЛИДАЦИЯ ========================================
 
-const isValid = (options, formElement, inputElement) => {
+const isValid = (options, formElement, inputElement, chekRegular) => {
   if (!inputElement.validity.valid) {
     // showInputError теперь получает параметром форму, в которой
     // находится проверяемое поле, и само это поле
-    showInputError(options, formElement, inputElement, inputElement.validationMessage);
+    showInputError(
+      options,
+      formElement,
+      inputElement,
+      inputElement.validationMessage
+    );
   } else {
     // hideInputError теперь получает параметром форму, в которой
     // находится проверяемое поле, и само это поле
     hideInputError(options, formElement, inputElement);
   }
-  setButtonSubmit(options, formElement, inputElement.validity.valid);
+  //Если прошла проверка стандартная броаузерная и регуляркой то ОК иначе не ОК
+  if (inputElement.validity.valid === true && chekRegular === true) {
+    setButtonSubmit(options, formElement, true);
+  } else {
+    setButtonSubmit(options, formElement, false);
+  }
 };
 
 const showInputError = (options, formElement, inputElement, errorMessage) => {
@@ -163,9 +173,12 @@ const setEvtListenersInput = (options, formElement) => {
     inputElement.addEventListener("input", () => {
       // Внутри колбэка вызовем isValid,
       // передав ей форму и проверяемый элемент
-      isValid(options, formElement, inputElement);
-      //Вешаем проверку на латиницу и кириллицу
-      console.log(chekRegular(inputElement.value))
+      isValid(
+        options,
+        formElement,
+        inputElement,
+        chekRegular(inputElement.value)
+      );
     });
   });
 };
@@ -177,6 +190,9 @@ const setButtonSubmit = (options, formElement, buttonStatus) => {
   formElement - где будем искать
   buttonStatus - текущее состояние относительно валидации
   */
+
+  console.log(buttonStatus)
+
   const buttonList = Array.from(
     formElement.querySelectorAll(options.submitButtonSelector)
   );
@@ -187,7 +203,7 @@ const setButtonSubmit = (options, formElement, buttonStatus) => {
     } else {
       buttonElement.classList.add("popup__button_disabled");
     }
-    buttonElement.disabled = !buttonStatus;
+    buttonElement.disabled = buttonStatus;
   });
 };
 
