@@ -9,6 +9,15 @@ const placesList = document.querySelector(".places__list"); //Место куд�
 const profileEditButton = document.querySelector(".profile__edit-button"); //Кнопка редактирование профиля
 const newCardAddButton = document.querySelector(".profile__add-button"); //Кнопка создание карточки
 
+const validationConfig = {
+  formSelector: ".popup__form", //Формы в которых ищем
+  inputSelector: ".popup__input", //Инпуты в формах
+  submitButtonSelector: ".popup__button", //Кнопки submit
+  inactiveButtonClass: "popup__button_disabled", //Кнопки submit в состоянии блокитровки
+  inputErrorClass: "popup__input_type_error", //Оформление ошибки 
+  errorClass: "popup__error_visible", //??
+}
+
 //Модалка увеличение картинки
 const popupImageForm = document.querySelector(".popup_type_image"); //Окно показа увеличенной картинки
 const popupImageFormCloseButton = popupImageForm.querySelector(".popup__close"); //Кнопка закрытия окна с увеличенной картинкой
@@ -38,6 +47,7 @@ modalFormClickListener(
   saveUserDataFromPopupToPage
 ); //Submit в окне редактивароя профиля
 popupProfileCloseButton.addEventListener("click", function () {
+  clearValidation(formsTypeEdit, validationConfig);
   closePopup(popupEditProfile);
 }); //Закрытие окна по крестику
 
@@ -122,43 +132,43 @@ function createNewUserCard() {
 //======================================== ВАЛИДАЦИЯ ========================================
 
 const isValid = (options, formElement, inputElement, chekRegular) => {
-  if (!inputElement.validity.valid) {
-    // showInputError теперь получает параметром форму, в которой
-    // находится проверяемое поле, и само это поле
+  //Если прошла проверка стандартная браузерная и регуляркой то ОК иначе не ОК
+  if (inputElement.validity.valid === true && chekRegular === true) {
+    setButtonSubmit(options, formElement, true);
+    hideInputError(options, formElement, inputElement);
+  } else {
     showInputError(
       options,
       formElement,
       inputElement,
-      inputElement.validationMessage
+      inputElement.validationMessage,
+      chekRegular
     );
-  } else {
-    // hideInputError теперь получает параметром форму, в которой
-    // находится проверяемое поле, и само это поле
-    hideInputError(options, formElement, inputElement);
-  }
-  //Если прошла проверка стандартная броаузерная и регуляркой то ОК иначе не ОК
-  if (inputElement.validity.valid === true && chekRegular === true) {
-    setButtonSubmit(options, formElement, true);
-  } else {
     setButtonSubmit(options, formElement, false);
   }
 };
 
-const showInputError = (options, formElement, inputElement, errorMessage) => {
-  // Находим элемент ошибки внутри самой функции
+const showInputError = (
+  options,
+  formElement,
+  inputElement,
+  errorMessage,
+  chekRegular
+) => {
+
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-  // Остальной код такой же
-  inputElement.classList.add("form__input-error");
-  errorElement.textContent = errorMessage;
-  //errorElement.classList.add("form__input-error_active");
+    errorElement.classList.add(options.inputErrorClass);
+
+  if (chekRegular === false) { //Если регулярка даёт false - выводим кастомную ошибку
+    errorElement.textContent = inputElement.getAttribute("data-regexp-error");
+  } else { //иначе default
+    errorElement.textContent = errorMessage;
+  }
 };
 
 const hideInputError = (options, formElement, inputElement) => {
-  // Находим элемент ошибки
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-  // Остальной код такой же
-  inputElement.classList.remove("form__input-error");
-  //errorElement.classList.remove("form__input-error_active");
+  errorElement.classList.remove(options.inputErrorClass);
   errorElement.textContent = "";
 };
 
@@ -169,10 +179,9 @@ const setEvtListenersInput = (options, formElement) => {
   );
 
   inputList.forEach((inputElement) => {
-    // каждому полю добавим обработчик события input
+
     inputElement.addEventListener("input", () => {
-      // Внутри колбэка вызовем isValid,
-      // передав ей форму и проверяемый элемент
+
       isValid(
         options,
         formElement,
@@ -191,8 +200,6 @@ const setButtonSubmit = (options, formElement, buttonStatus) => {
   buttonStatus - текущее состояние относительно валидации
   */
 
-  console.log(buttonStatus)
-
   const buttonList = Array.from(
     formElement.querySelectorAll(options.submitButtonSelector)
   );
@@ -203,7 +210,7 @@ const setButtonSubmit = (options, formElement, buttonStatus) => {
     } else {
       buttonElement.classList.add("popup__button_disabled");
     }
-    buttonElement.disabled = buttonStatus;
+    buttonElement.disabled = !buttonStatus;
   });
 };
 
@@ -221,11 +228,13 @@ function chekRegular(inputText) {
   return regex.test(inputText);
 }
 
-enableValidation({
-  formSelector: ".popup__form", //Формы в которых ищем
-  inputSelector: ".popup__input", //Инпуты в формах
-  submitButtonSelector: ".popup__button", //Кнопки submit
-  inactiveButtonClass: "popup__button_disabled", //Кнопки submit в состоянии блокитровки
-  inputErrorClass: "popup__input_type_error",
-  errorClass: "popup__error_visible",
-});
+function clearValidation(profileForm, validationConfig){
+  const errMessage = profileForm.querySelectorAll(validationConfig.inputErrorClass);
+  console.log(validationConfig.inputErrorClass);
+  errMessage.forEach((element) => {
+    console.log(element)
+    element.classList.remove(validationConfig.inputErrorClass);
+  })
+}
+
+enableValidation(validationConfig);

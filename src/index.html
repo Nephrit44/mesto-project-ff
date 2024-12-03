@@ -49,6 +49,7 @@
           <h3 class="popup__title">Редактировать профиль</h3>
 
           <form class="popup__form" name="edit-profile">
+            
             <label class="form__field">
               <input
                 id="name-input"
@@ -58,9 +59,10 @@
                 placeholder="Имя"
                 minlength="2"
                 maxlength="40"
+                data-regexp-error="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
                 required
               />
-              <span class="form__input-error name-input-error"></span>
+              <span class="name-input-error"></span>
             </label>
 
             <label class="form__field">
@@ -74,8 +76,9 @@
                 maxlength="200"
                 required
               />
-              <span class="form__input-error description-input-error"></span>
+              <span class="description-input-error"></span>
             </label>
+
             <button type="submit" class="button popup__button">
               Сохранить
             </button>
@@ -90,19 +93,19 @@
           <h3 class="popup__title">Новое место</h3>
 
           <form class="popup__form" name="new-place">
-
             <label class="form__field">
               <input
                 id="cardName-input"
                 type="text"
                 name="place-name"
+                data-regexp-error="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
                 class="popup__input popup__input_type_card-name"
                 placeholder="Название"
                 minlength="2"
                 maxlength="30"
                 required
               />
-              <span class="form__input-error cardName-input-error"></span>
+              <span class="cardName-input-error"></span>
             </label>
 
             <label class="form__field">
@@ -110,13 +113,17 @@
                 id="cardURL-input"
                 type="url"
                 name="link"
-                class="popup__input popup__input_type_url" 
+                class="popup__input popup__input_type_url"
                 placeholder="Ссылка на картинку"
                 required
               />
-              <span class="form__input-error cardURL-input-error"></span>
+              <span class="cardURL-input-error"></span>
             </label>
-            <button type="submit" class="button popup__button popup__button_disabled" disabled>
+            <button
+              type="submit"
+              class="button popup__button popup__button_disabled"
+              disabled
+            >
               Сохранить
             </button>
           </form>

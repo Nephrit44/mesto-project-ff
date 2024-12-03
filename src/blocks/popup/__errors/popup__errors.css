@@ -1,4 +1,4 @@
-.form__input-error {
+.popup__input_type_error {
   display: flex;
   color: #f00;
   font-family: Inter;
@@ -8,6 +8,6 @@
   line-height: normal;
 }
 
-.form__input-error:last-of-type {
+.popup__input_type_error:last-of-type {
   margin-top: 5px;
 }
