@@ -14,9 +14,9 @@ const validationConfig = {
   inputSelector: ".popup__input", //Инпуты в формах
   submitButtonSelector: ".popup__button", //Кнопки submit
   inactiveButtonClass: "popup__button_disabled", //Кнопки submit в состоянии блокитровки
-  inputErrorClass: "popup__input_type_error", //Оформление ошибки 
+  inputErrorClass: "popup__input_type_error", //Оформление ошибки
   errorClass: "popup__error_visible", //??
-}
+};
 
 //Модалка увеличение картинки
 const popupImageForm = document.querySelector(".popup_type_image"); //Окно показа увеличенной картинки
@@ -131,96 +131,76 @@ function createNewUserCard() {
 
 //======================================== ВАЛИДАЦИЯ ========================================
 
-const isValid = (options, formElement, inputElement, chekRegular) => {
-  //Если прошла проверка стандартная браузерная и регуляркой то ОК иначе не ОК
-  if (inputElement.validity.valid === true && chekRegular === true) {
-    setButtonSubmit(options, formElement, true);
-    hideInputError(options, formElement, inputElement);
-  } else {
-    showInputError(
-      options,
-      formElement,
-      inputElement,
-      inputElement.validationMessage,
-      chekRegular
-    );
-    setButtonSubmit(options, formElement, false);
-  }
-};
+//Шаг1. Включение валидации
+/*
+1. Нати все формы для валидации
+2. Во всех формах найти инпуты и повесить слушалку на изменения + проверка регулярным выражением
+3. Все кнопки
+*/
+const enableValidation = (options) => {
+  const formLists = document.querySelectorAll(options.formSelector);
 
-const showInputError = (
-  options,
-  formElement,
-  inputElement,
-  errorMessage,
-  chekRegular
-) => {
+  formLists.forEach((form) => {
+    //Inputs
+    const fromInputs = form.querySelectorAll(options.inputSelector);
 
-  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-    errorElement.classList.add(options.inputErrorClass);
-
-  if (chekRegular === false) { //Если регулярка даёт false - выводим кастомную ошибку
-    errorElement.textContent = inputElement.getAttribute("data-regexp-error");
-  } else { //иначе default
-    errorElement.textContent = errorMessage;
-  }
-};
-
-const hideInputError = (options, formElement, inputElement) => {
-  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-  errorElement.classList.remove(options.inputErrorClass);
-  errorElement.textContent = "";
-};
-
-//Настройка Инпутов
-const setEvtListenersInput = (options, formElement) => {
-  const inputList = Array.from(
-    formElement.querySelectorAll(options.inputSelector)
-  );
-
-  inputList.forEach((inputElement) => {
-
-    inputElement.addEventListener("input", () => {
-
-      isValid(
-        options,
-        formElement,
-        inputElement,
-        chekRegular(inputElement.value)
-      );
+    fromInputs.forEach((curentInput) => {
+      curentInput.addEventListener("input", () => {
+        isValid(form, curentInput, options);
+      });
     });
   });
 };
 
-//Настройка кнопок Submit в зависимости от валидации
-const setButtonSubmit = (options, formElement, buttonStatus) => {
-  /*
-  options - входные параметры. Что будем искать
-  formElement - где будем искать
-  buttonStatus - текущее состояние относительно валидации
-  */
+//ШАГ 2. Проверка валидации
+/*
+  1. Текущий input проходит валидацию
+  2. Текущий input проходит regExp
+  3. Вывести сообщение в зависимости от результата по ошибкам
+*/
+const isValid = (form, curentInput, options) => {
+  const defaultValid = curentInput.validity.valid; //Возврат true / false
+  const regExpValid = chekRegular(curentInput.value); //Возврат true / false
+  const curentFormSubmitButton = form.querySelector(
+    options.submitButtonSelector
+  ); //Кнопка с текущей формы
 
-  const buttonList = Array.from(
-    formElement.querySelectorAll(options.submitButtonSelector)
-  );
-
-  buttonList.forEach((buttonElement) => {
-    if (buttonStatus) {
-      buttonElement.classList.remove("popup__button_disabled");
+  //Проверка регуляркой, при суловии, что input есть атрибут-маркер
+  if (regExpValid && curentInput.hasAttribute("data-need-chek-regexp")) {
+    //Обычная валидация
+    if (defaultValid === true && curentInput.hasAttribute("data-need-chek-regexp") === true) {
+      hideInputError(form, curentInput, options);
+      enableButtonsubmit(curentFormSubmitButton, options);
     } else {
-      buttonElement.classList.add("popup__button_disabled");
+      showInputError(form, curentInput, options, curentInput.validationMessage);
+      disableButtonsubmit(curentFormSubmitButton, options);
     }
-    buttonElement.disabled = !buttonStatus;
-  });
+  } else {
+    showInputError(form, curentInput, options, curentInput.dataset.regexpError);
+    disableButtonsubmit(curentFormSubmitButton, options);
+  }
 };
 
-//Поиск форм
-const enableValidation = (options) => {
-  const formList = Array.from(document.querySelectorAll(options.formSelector));
+const showInputError = (form, curentInput, options, errorMessage) => {
+  const errorElement = form.querySelector(`.${curentInput.id}-error`);
+  errorElement.classList.add(options.inputErrorClass);
+  errorElement.textContent = errorMessage;
+};
 
-  formList.forEach((formElement) => {
-    setEvtListenersInput(options, formElement);
-  });
+const hideInputError = (form, curentInput, options) => {
+  const errorElement = form.querySelector(`.${curentInput.id}-error`);
+  errorElement.classList.remove(options.inputErrorClass);
+  errorElement.textContent = "";
+};
+
+const disableButtonsubmit = (curentFormSubmitButton, options) => {
+  curentFormSubmitButton.classList.add("popup__button_disabled");
+  curentFormSubmitButton.disabled = true;
+};
+
+const enableButtonsubmit = (curentFormSubmitButton, options) => {
+  curentFormSubmitButton.classList.remove("popup__button_disabled");
+  curentFormSubmitButton.disabled = false;
 };
 
 function chekRegular(inputText) {
@@ -228,13 +208,15 @@ function chekRegular(inputText) {
   return regex.test(inputText);
 }
 
-function clearValidation(profileForm, validationConfig){
-  const errMessage = profileForm.querySelectorAll(validationConfig.inputErrorClass);
+function clearValidation(profileForm, validationConfig) {
+  const errMessage = profileForm.querySelectorAll(
+    validationConfig.inputErrorClass
+  );
   console.log(validationConfig.inputErrorClass);
   errMessage.forEach((element) => {
-    console.log(element)
+    console.log(element);
     element.classList.remove(validationConfig.inputErrorClass);
-  })
+  });
 }
 
 enableValidation(validationConfig);
