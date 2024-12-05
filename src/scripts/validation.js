@@ -36,14 +36,17 @@ const isValid = (form, curentInput, options) => {
 };
 
 const showInputError = (form, curentInput, options, errorMessage) => {
+
   const errorElement = form.querySelector(`.${curentInput.id}-error`);
-  errorElement.classList.add(options.inputErrorClass);
+  curentInput.classList.add(options.inputErrorClass); //Полоска
+  errorElement.classList.add(options.errorClass); //Span для сообщения
   errorElement.textContent = errorMessage;
 };
 
 const hideInputError = (form, curentInput, options) => {
   const errorElement = form.querySelector(`.${curentInput.id}-error`);
-  errorElement.classList.remove(options.inputErrorClass);
+  curentInput.classList.remove(options.inputErrorClass); //Полоска
+  errorElement.classList.remove(options.errorClass); //Span для сообщения
   errorElement.textContent = "";
 };
 
@@ -59,10 +62,10 @@ const enableButtonsubmit = (curentFormSubmitButton, options) => {
 
 function clearValidation(form, options) {
     //Сброс спанов
-  const errorClassCollection = form.querySelectorAll(options.errorClass);
+  const errorClassCollection = form.querySelectorAll(options.inputErrorClass);
   errorClassCollection.forEach((element) => {
     element.textContent = "";
-    element.classList.remove(options.inputErrorClass);
+    element.classList.remove(options.errorClass);
   });
   //Сброс кнопки
   const curentFormSubmitButton = form.querySelector(
@@ -70,3 +73,4 @@ function clearValidation(form, options) {
   ); //Кнопка с текущей формы
   enableButtonsubmit(curentFormSubmitButton, options);
 }
+

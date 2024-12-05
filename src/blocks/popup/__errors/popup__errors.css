@@ -1,5 +1,8 @@
-.popup__input_type_error {
-  display: flex;
+.popup__input_type_error:invalid {
+  border-bottom: 1px solid #ff0000;
+}
+
+.popup__error_visible {
   color: #f00;
   font-family: Inter;
   font-size: 12px;
@@ -8,6 +11,6 @@
   line-height: normal;
 }
 
-.popup__input_type_error:last-of-type {
-  margin-top: 5px;
+.card-info-error {
+  min-height: 30px;
 }

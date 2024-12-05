@@ -15,8 +15,8 @@ const validationConfig = {
   inputSelector: ".popup__input", //Инпуты в формах
   submitButtonSelector: ".popup__button", //Кнопки submit
   inactiveButtonClass: "popup__button_disabled", //Кнопки submit в состоянии блокитровки
-  inputErrorClass: "popup__input_type_error", //Оформление ошибки
-  errorClass: ".popup__error_visible", //Скорее всего это span для сообщений
+  inputErrorClass: "popup__input_type_error", //Полоска в input
+  errorClass: "popup__error_visible", //Span сообщение
 };
 
 //Модалка увеличение картинки
