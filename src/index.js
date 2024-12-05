@@ -1,6 +1,7 @@
 import { initialCards } from "./scripts/cards.js";
 import { createCard, onLikeCard, onDeleteCard } from "./scripts/card.js";
 import { openPopup, closePopup, popupCloseByOverlay } from "./scripts/modal.js";
+import { enableValidation, isValid, showInputError, hideInputError, disableButtonsubmit, enableButtonsubmit, clearValidation } from "./scripts/validation.js"
 import "./pages/index.css";
 
 export { openImagePopup };
@@ -15,7 +16,7 @@ const validationConfig = {
   submitButtonSelector: ".popup__button", //Кнопки submit
   inactiveButtonClass: "popup__button_disabled", //Кнопки submit в состоянии блокитровки
   inputErrorClass: "popup__input_type_error", //Оформление ошибки
-  errorClass: "popup__error_visible", //??
+  errorClass: ".popup__error_visible", //Скорее всего это span для сообщений
 };
 
 //Модалка увеличение картинки
@@ -61,6 +62,7 @@ addAnimated(popupNewCard); //Анимация на окно
 popupCloseByOverlay(popupNewCard); //Закрытия окна по оверлею
 modalFormClickListener(formsNewCard, popupNewCard, createNewUserCard); //Submit в окне новая карточка
 popupNewCardCloseButton.addEventListener("click", function () {
+  clearValidation(formsTypeEdit, validationConfig);
   closePopup(popupNewCard);
 }); //Закрытие окна по крестику
 
@@ -127,89 +129,6 @@ function createNewUserCard() {
   placesList.prepend(
     createCard(newCardObject, onDeleteCard, onLikeCard, openImagePopup)
   );
-}
-
-//======================================== ВАЛИДАЦИЯ ========================================
-
-//Шаг1. Включение валидации
-/*
-1. Нати все формы для валидации
-2. Во всех формах найти инпуты и повесить слушалку на изменения + проверка регулярным выражением
-3. Все кнопки
-*/
-const enableValidation = (options) => {
-  const formLists = document.querySelectorAll(options.formSelector);
-
-  formLists.forEach((form) => {
-    //Inputs
-    const fromInputs = form.querySelectorAll(options.inputSelector);
-
-    fromInputs.forEach((curentInput) => {
-      curentInput.addEventListener("input", () => {
-        isValid(form, curentInput, options);
-      });
-    });
-  });
-};
-
-//ШАГ 2. Проверка валидации
-/*
-  1. Текущий input проходит валидацию
-  2. Текущий input проходит regExp
-  3. Вывести сообщение в зависимости от результата по ошибкам
-*/
-const isValid = (form, curentInput, options) => {
-  const curentFormSubmitButton = form.querySelector(
-    options.submitButtonSelector
-  ); //Кнопка с текущей формы
-
-  if (curentInput.validity.patternMismatch) {
-    curentInput.setCustomValidity(curentInput.dataset.regexpError);
-  } else {
-    curentInput.setCustomValidity("");
-  }
-
-  //Проверка регуляркой, при суловии, что input есть атрибут-маркер
-  if (!curentInput.validity.valid) {
-    showInputError(form, curentInput, options, curentInput.validationMessage);
-    disableButtonsubmit(curentFormSubmitButton, options);
-  } else {
-    hideInputError(form, curentInput, options);
-    enableButtonsubmit(curentFormSubmitButton, options);
-  }
-};
-
-const showInputError = (form, curentInput, options, errorMessage) => {
-  const errorElement = form.querySelector(`.${curentInput.id}-error`);
-  errorElement.classList.add(options.inputErrorClass);
-  errorElement.textContent = errorMessage;
-};
-
-const hideInputError = (form, curentInput, options) => {
-  const errorElement = form.querySelector(`.${curentInput.id}-error`);
-  errorElement.classList.remove(options.inputErrorClass);
-  errorElement.textContent = "";
-};
-
-const disableButtonsubmit = (curentFormSubmitButton, options) => {
-  curentFormSubmitButton.classList.add("popup__button_disabled");
-  curentFormSubmitButton.disabled = true;
-};
-
-const enableButtonsubmit = (curentFormSubmitButton, options) => {
-  curentFormSubmitButton.classList.remove("popup__button_disabled");
-  curentFormSubmitButton.disabled = false;
-};
-
-function clearValidation(profileForm, validationConfig) {
-  const errMessage = profileForm.querySelectorAll(
-    validationConfig.inputErrorClass
-  );
-  console.log(validationConfig.inputErrorClass);
-  errMessage.forEach((element) => {
-    console.log(element);
-    element.classList.remove(validationConfig.inputErrorClass);
-  });
 }
 
 enableValidation(validationConfig);
