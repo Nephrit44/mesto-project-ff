@@ -1,5 +1,13 @@
 //======================================== ВАЛИДАЦИЯ ========================================
-export { enableValidation, isValid, showInputError, hideInputError, disableButtonsubmit, enableButtonsubmit, clearValidation }
+export {
+  enableValidation,
+  isValid,
+  showInputError,
+  hideInputError,
+  disableButtonsubmit,
+  enableButtonsubmit,
+  clearValidation,
+};
 const enableValidation = (options) => {
   const formLists = document.querySelectorAll(options.formSelector);
 
@@ -36,7 +44,6 @@ const isValid = (form, curentInput, options) => {
 };
 
 const showInputError = (form, curentInput, options, errorMessage) => {
-
   const errorElement = form.querySelector(`.${curentInput.id}-error`);
   curentInput.classList.add(options.inputErrorClass); //Полоска
   errorElement.classList.add(options.errorClass); //Span для сообщения
@@ -61,11 +68,10 @@ const enableButtonsubmit = (curentFormSubmitButton, options) => {
 };
 
 function clearValidation(form, options) {
-    //Сброс спанов
-  const errorClassCollection = form.querySelectorAll(options.inputErrorClass);
-  errorClassCollection.forEach((element) => {
-    element.textContent = "";
-    element.classList.remove(options.errorClass);
+  //Сброс спанов
+  const inputCollection = form.querySelectorAll(options.inputSelector);
+  inputCollection.forEach((element) => {
+    hideInputError(form, element, options);
   });
   //Сброс кнопки
   const curentFormSubmitButton = form.querySelector(
@@ -73,4 +79,3 @@ function clearValidation(form, options) {
   ); //Кнопка с текущей формы
   enableButtonsubmit(curentFormSubmitButton, options);
 }
-
