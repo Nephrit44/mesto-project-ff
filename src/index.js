@@ -159,25 +159,23 @@ const enableValidation = (options) => {
   3. Вывести сообщение в зависимости от результата по ошибкам
 */
 const isValid = (form, curentInput, options) => {
-  const defaultValid = curentInput.validity.valid; //Возврат true / false
-  const regExpValid = chekRegular(curentInput.value); //Возврат true / false
   const curentFormSubmitButton = form.querySelector(
     options.submitButtonSelector
   ); //Кнопка с текущей формы
 
-  //Проверка регуляркой, при суловии, что input есть атрибут-маркер
-  if (regExpValid && curentInput.hasAttribute("data-need-chek-regexp")) {
-    //Обычная валидация
-    if (defaultValid === true && curentInput.hasAttribute("data-need-chek-regexp") === true) {
-      hideInputError(form, curentInput, options);
-      enableButtonsubmit(curentFormSubmitButton, options);
-    } else {
-      showInputError(form, curentInput, options, curentInput.validationMessage);
-      disableButtonsubmit(curentFormSubmitButton, options);
-    }
+  if (curentInput.validity.patternMismatch) {
+    curentInput.setCustomValidity(curentInput.dataset.regexpError);
   } else {
-    showInputError(form, curentInput, options, curentInput.dataset.regexpError);
+    curentInput.setCustomValidity("");
+  }
+
+  //Проверка регуляркой, при суловии, что input есть атрибут-маркер
+  if (!curentInput.validity.valid) {
+    showInputError(form, curentInput, options, curentInput.validationMessage);
     disableButtonsubmit(curentFormSubmitButton, options);
+  } else {
+    hideInputError(form, curentInput, options);
+    enableButtonsubmit(curentFormSubmitButton, options);
   }
 };
 
@@ -202,11 +200,6 @@ const enableButtonsubmit = (curentFormSubmitButton, options) => {
   curentFormSubmitButton.classList.remove("popup__button_disabled");
   curentFormSubmitButton.disabled = false;
 };
-
-function chekRegular(inputText) {
-  const regex = /^[a-zа-яё\s\-]+$/i; //Все буквы РУС и ENG, тирешка и пробел
-  return regex.test(inputText);
-}
 
 function clearValidation(profileForm, validationConfig) {
   const errMessage = profileForm.querySelectorAll(
