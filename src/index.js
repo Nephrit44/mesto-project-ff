@@ -46,6 +46,8 @@ const popupUserNameInput = formsTypeEdit.name; //Новое имя профил�
 const popupUserDescriptionInput = formsTypeEdit.description; //новое описание профиля
 const currentUserName = document.querySelector(".profile__title"); //Текущее имя профиля
 const currentUserDescription = document.querySelector(".profile__description"); //Текущее описание профиля
+const curentUserImage = document.querySelector(".profile__image"); //Текущая фотка пользователя
+
 addAnimated(popupEditProfile); //Анимация на окно
 popupCloseByOverlay(popupEditProfile); //Закрытия окна по оверлею
 modalFormClickListener(
@@ -133,11 +135,19 @@ function createNewUserCard() {
 
 enableValidation(validationConfig);
 
-const cardsCollection =  await(apiRequest(path, getCardCollection, regKey));
+
+//================================================= API =========================================================
+const fromServerCardsCollection =  await(apiRequest(path, getCardCollection, regKey)); //Получение карточек
+const fromServerUserProfile =  await(apiRequest(path, getUserProfile, regKey)); //Получение карточек
 
 //Загрузка списка карточек из базы
-cardsCollection.forEach((cardData) => {
+fromServerCardsCollection .forEach((cardData) => {
   placesList.append(
     createCard(cardData, onDeleteCard, onLikeCard, openImagePopup)
   );
 });
+
+console.log(fromServerUserProfile);
+currentUserName.textContent = fromServerUserProfile.name 
+currentUserDescription.textContent = fromServerUserProfile.about
+curentUserImage.src = fromServerUserProfile.avatar
