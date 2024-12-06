@@ -1,7 +1,8 @@
 import { initialCards } from "./scripts/cards.js";
 import { createCard, onLikeCard, onDeleteCard } from "./scripts/card.js";
 import { openPopup, closePopup, popupCloseByOverlay } from "./scripts/modal.js";
-import { enableValidation, isValid, showInputError, hideInputError, disableButtonsubmit, enableButtonsubmit, clearValidation } from "./scripts/validation.js"
+import { enableValidation, clearValidation } from "./scripts/validation.js";
+import { apiRequest } from "./scripts/api.js";
 import "./pages/index.css";
 
 export { openImagePopup };
@@ -9,6 +10,11 @@ export { openImagePopup };
 const placesList = document.querySelector(".places__list"); //Место куда вставляются карточки
 const profileEditButton = document.querySelector(".profile__edit-button"); //Кнопка редактирование профиля
 const newCardAddButton = document.querySelector(".profile__add-button"); //Кнопка создание карточки
+
+const path = "https://nomoreparties.co/v1/wff-cohort-28/";
+const regKey = "321598a9-d89b-4d5f-b00c-2b7762da8c14";
+const getUserProfile = "users/me";
+const getCardCollection = "cards";
 
 const validationConfig = {
   formSelector: ".popup__form", //Формы в которых ищем
@@ -66,12 +72,6 @@ popupNewCardCloseButton.addEventListener("click", function () {
   closePopup(popupNewCard);
 }); //Закрытие окна по крестику
 
-//Загрузка списка карточек из базы
-initialCards.forEach((cardData) => {
-  placesList.append(
-    createCard(cardData, onDeleteCard, onLikeCard, openImagePopup)
-  );
-});
 
 //Слушалка нажатия на редактирование профиля
 profileEditButton.addEventListener("click", function () {
@@ -132,3 +132,12 @@ function createNewUserCard() {
 }
 
 enableValidation(validationConfig);
+
+const cardsCollection =  await(apiRequest(path, getCardCollection, regKey));
+
+//Загрузка списка карточек из базы
+cardsCollection.forEach((cardData) => {
+  placesList.append(
+    createCard(cardData, onDeleteCard, onLikeCard, openImagePopup)
+  );
+});

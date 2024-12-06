@@ -1,11 +1,6 @@
 //======================================== ВАЛИДАЦИЯ ========================================
 export {
   enableValidation,
-  isValid,
-  showInputError,
-  hideInputError,
-  disableButtonsubmit,
-  enableButtonsubmit,
   clearValidation,
 };
 const enableValidation = (options) => {
