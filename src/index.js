@@ -2,7 +2,7 @@ import { initialCards } from "./scripts/cards.js";
 import { createCard, onLikeCard, onDeleteCard } from "./scripts/card.js";
 import { openPopup, closePopup, popupCloseByOverlay } from "./scripts/modal.js";
 import { enableValidation, clearValidation } from "./scripts/validation.js";
-import { apiRequest } from "./scripts/api.js";
+import { apiGETRequest, apiPATCHRequest } from "./scripts/api.js";
 import "./pages/index.css";
 
 export { openImagePopup };
@@ -107,8 +107,11 @@ function modalFormClickListener(curentForm, curentModalWindow, actionFunction) {
 
 //Выводим новые данные пользователя на страницу
 function saveUserDataFromPopupToPage() {
+
+  const saveServerUserProfile =  apiPATCHRequest(path, getUserProfile, regKey, popupUserNameInput.value, popupUserDescriptionInput.value); //Отправка на сервер новых данных
   currentUserName.textContent = popupUserNameInput.value;
   currentUserDescription.textContent = popupUserDescriptionInput.value;
+  console.log(saveServerUserProfile)
   closePopup(popupEditProfile);
 }
 
@@ -137,8 +140,8 @@ enableValidation(validationConfig);
 
 
 //================================================= API =========================================================
-const fromServerCardsCollection =  await(apiRequest(path, getCardCollection, regKey)); //Получение карточек
-const fromServerUserProfile =  await(apiRequest(path, getUserProfile, regKey)); //Получение карточек
+const fromServerCardsCollection =  await(apiGETRequest(path, getCardCollection, regKey)); //Получение карточек
+const fromServerUserProfile =  await(apiGETRequest(path, getUserProfile, regKey)); //Получение профиля
 
 //Загрузка списка карточек из базы
 fromServerCardsCollection .forEach((cardData) => {
@@ -147,7 +150,7 @@ fromServerCardsCollection .forEach((cardData) => {
   );
 });
 
-console.log(fromServerUserProfile);
+//Загрузка данных по профилю
 currentUserName.textContent = fromServerUserProfile.name 
 currentUserDescription.textContent = fromServerUserProfile.about
 curentUserImage.src = fromServerUserProfile.avatar
