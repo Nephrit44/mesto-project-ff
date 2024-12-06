@@ -25,13 +25,30 @@ const validationConfig = {
   errorClass: "popup__error_visible", //Span сообщение
 };
 
+const basicConfig = {
+  //Элементы на странице
+  onPageUserName: ".profile__title", //Текущее имя профиля
+  onPageUserDescription: ".profile__description", //Текущее описание профиля
+  onPageUserAvatar: ".profile__image", //Текущая фотка пользователя
+  //Редактирование профиля
+  windowEditProfile: ".popup_type_edit", //Окно редактирования профиля
+  formEditProfile: "edit-profile", //Форма в окне редактирования профиля
+  //Увеличенное изображение
+  windowImage: ".popup_type_image", //Окно показа увеличенной картинки
+  formImageTitle: ".popup__caption", //Место для описания в модальном окне
+  formImageLink: ".popup__image", //Место на ссылку в модальном окне
+  //Создание новой карточки
+  windowNewCard: ".popup_type_new-card", //Окно для новой карточки
+  //Остальные элементы
+  buttonClose: ".popup__close",
+  windowAnimated: "popup_is-animated",
+}
+
 //Модалка увеличение картинки
-const popupImageForm = document.querySelector(".popup_type_image"); //Окно показа увеличенной картинки
-const popupImageFormCloseButton = popupImageForm.querySelector(".popup__close"); //Кнопка закрытия окна с увеличенной картинкой
-
-const popupImageTitle = popupImageForm.querySelector(".popup__caption"); //Место для описания в модальном окне
-const popupImageLink = popupImageForm.querySelector(".popup__image"); //Место на ссылку в модальном окне
-
+const popupImageForm = document.querySelector(basicConfig.windowImage); 
+const popupImageFormCloseButton = popupImageForm.querySelector(basicConfig.buttonClose); 
+const popupImageTitle = popupImageForm.querySelector(basicConfig.formImageTitle); 
+const popupImageLink = popupImageForm.querySelector(basicConfig.formImageLink); 
 addAnimated(popupImageForm); //Анимация на окно
 popupCloseByOverlay(popupImageForm); //Закрытия окна по оверлею
 popupImageFormCloseButton.addEventListener("click", function () {
@@ -39,14 +56,14 @@ popupImageFormCloseButton.addEventListener("click", function () {
 }); //Закрытие окна по крестику
 
 //Модалка редактирование профиля
-const popupEditProfile = document.querySelector(".popup_type_edit"); //Окно редактирования профиля
-const formsTypeEdit = document.forms["edit-profile"]; //Форма редактирования профиля
-const popupProfileCloseButton = popupEditProfile.querySelector(".popup__close"); //Кнопка закрытия окна редактирвоания профиля
+const popupEditProfile = document.querySelector(basicConfig.windowEditProfile); 
+const formsTypeEdit = document.forms[basicConfig.formEditProfile]; 
+const popupProfileCloseButton = popupEditProfile.querySelector(basicConfig.buttonClose); 
 const popupUserNameInput = formsTypeEdit.name; //Новое имя профиля
 const popupUserDescriptionInput = formsTypeEdit.description; //новое описание профиля
-const currentUserName = document.querySelector(".profile__title"); //Текущее имя профиля
-const currentUserDescription = document.querySelector(".profile__description"); //Текущее описание профиля
-const curentUserImage = document.querySelector(".profile__image"); //Текущая фотка пользователя
+const currentUserName = document.querySelector(basicConfig.onPageUserName); 
+const currentUserDescription = document.querySelector(basicConfig.onPageUserDescription); 
+const curentUserImage = document.querySelector(basicConfig.onPageUserAvatar); 
 
 addAnimated(popupEditProfile); //Анимация на окно
 popupCloseByOverlay(popupEditProfile); //Закрытия окна по оверлею
@@ -54,25 +71,27 @@ modalFormClickListener(
   formsTypeEdit,
   popupEditProfile,
   saveUserDataFromPopupToPage
-); //Submit в окне редактивароя профиля
+); 
+//Submit в окне редактивароя профиля
 popupProfileCloseButton.addEventListener("click", function () {
   clearValidation(formsTypeEdit, validationConfig);
-  closePopup(popupEditProfile);
-}); //Закрытие окна по крестику
+  closePopup(popupEditProfile); //Закрытие окна по крестику
+}); 
 
 //Модалка новая карточка
-const popupNewCard = document.querySelector(".popup_type_new-card"); //Модалка для редактирования профиля
-const popupNewCardCloseButton = popupNewCard.querySelector(".popup__close"); //Кнопка закрытия окна создания новой карточки
+const popupNewCard = document.querySelector(basicConfig.windowNewCard); 
+const popupNewCardCloseButton = popupNewCard.querySelector(basicConfig.buttonClose);
 const formsNewCard = document.forms["new-place"]; //Форма создания новой карточки
 const popupNewPlaceInput = formsNewCard["place-name"]; //Название новой карточки
 const popupNewLinkInput = formsNewCard.link; //Ссылка на изображение для карточки
 addAnimated(popupNewCard); //Анимация на окно
 popupCloseByOverlay(popupNewCard); //Закрытия окна по оверлею
-modalFormClickListener(formsNewCard, popupNewCard, createNewUserCard); //Submit в окне новая карточка
+modalFormClickListener(formsNewCard, popupNewCard, createNewUserCard); 
+//Submit в окне новая карточка
 popupNewCardCloseButton.addEventListener("click", function () {
   clearValidation(formsTypeEdit, validationConfig);
-  closePopup(popupNewCard);
-}); //Закрытие окна по крестику
+  closePopup(popupNewCard); //Закрытие окна по крестику
+}); 
 
 
 //Слушалка нажатия на редактирование профиля
@@ -111,7 +130,6 @@ function saveUserDataFromPopupToPage() {
   const saveServerUserProfile =  apiPATCHRequest(path, getUserProfile, regKey, popupUserNameInput.value, popupUserDescriptionInput.value); //Отправка на сервер новых данных
   currentUserName.textContent = popupUserNameInput.value;
   currentUserDescription.textContent = popupUserDescriptionInput.value;
-  console.log(saveServerUserProfile)
   closePopup(popupEditProfile);
 }
 
@@ -122,7 +140,7 @@ function formNewCardReset() {
 
 //Добавление стиля с плавностями
 function addAnimated(form) {
-  form.classList.add("popup_is-animated");
+  form.classList.add(basicConfig.windowAnimated);
 }
 
 //Создание пользовательской карточки

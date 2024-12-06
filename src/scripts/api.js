@@ -1,5 +1,7 @@
 export { apiGETRequest, apiPATCHRequest }
 
+
+// ============= Получение данных =================
 function apiGETRequest(
   path,
   requestParametr,
@@ -15,6 +17,7 @@ function apiGETRequest(
   }).then((res) => getResponseData(res));
 }
 
+// ============= Отправка данных =================
 function apiPATCHRequest(
     path,
     requestParametr,
