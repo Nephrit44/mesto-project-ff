@@ -7,13 +7,14 @@ const basicConfig = {
   placeForImage: ".card__image", //Место на карточке под картинку
   basicCardName: ".card__title", //Заголовок на карточке
   basicCardDeleteButton: ".card__delete-button", //Кнопка для удаления на карточке
+  basicCardDeleteButtonHide: "card__delete-button-hide", //Свойство скрывания кнопки удаления не своей карточки
   basicCardLikeButton: ".card__like-button", //Кнопка лайков на карточке
   basicCardLikeCouner: ".card__like-count", //Счётчик лайков на карточке
 };
 
 const cardTemplate = document.querySelector(basicConfig.templateCard).content; 
 
-function createCard(cardData, onDeleteCard, onLikeCard, openImagePopup) {
+function createCard(cardData, onDeleteCard, onLikeCard, openImagePopup, userID) {
   const copyCard = cardTemplate.querySelector(basicConfig.basicCard).cloneNode(true); 
   const cardImage = copyCard.querySelector(basicConfig.placeForImage); 
   const cardTitle = copyCard.querySelector(basicConfig.basicCardName); 
@@ -26,7 +27,13 @@ function createCard(cardData, onDeleteCard, onLikeCard, openImagePopup) {
   cardImage.alt = cardData.name; //Альтернативное описание картинки
   cardLikeCounter.textContent = cardData.likes.length //Количество лайков
 
-  cardDeleteButton.addEventListener('click', () => onDeleteCard(copyCard));
+  //Если ID пользователя получение при загрузке профиля совпадает с ID из базы
+  //добавляем слушалку на уделение, если нет прячем
+  if(userID === cardData.owner._id){
+    cardDeleteButton.addEventListener('click', () => onDeleteCard(copyCard));
+  }else{
+    cardDeleteButton.classList.add(basicConfig.basicCardDeleteButtonHide);
+  }
   cardLikeButton.addEventListener('click', () => onLikeCard(cardLikeButton));
   cardImage.addEventListener('click', () => openImagePopup(cardData));
 

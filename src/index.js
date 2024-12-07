@@ -7,6 +7,7 @@ import "./pages/index.css";
 
 export { openImagePopup };
 //Общие переменные
+let userID = ""; //Пользовательское ID
 const placesList = document.querySelector(".places__list"); //Место куда вставляются карточки
 const profileEditButton = document.querySelector(".profile__edit-button"); //Кнопка редактирование профиля
 const newCardAddButton = document.querySelector(".profile__add-button"); //Кнопка создание карточки
@@ -164,14 +165,15 @@ enableValidation(validationConfig);
 const fromServerCardsCollection =  await(apiGETRequest(path, getCardCollection, regKey)); //Получение карточек
 const fromServerUserProfile =  await(apiGETRequest(path, getUserProfile, regKey)); //Получение профиля
 
+//Загрузка данных по профилю
+userID = fromServerUserProfile._id;
+currentUserName.textContent = fromServerUserProfile.name;
+currentUserDescription.textContent = fromServerUserProfile.about;
+curentUserImage.src = fromServerUserProfile.avatar;
+
 //Загрузка списка карточек из базы
 fromServerCardsCollection .forEach((cardData) => {
   placesList.append(
-    createCard(cardData, onDeleteCard, onLikeCard, openImagePopup)
+    createCard(cardData, onDeleteCard, onLikeCard, openImagePopup, userID)
   );
 });
-
-//Загрузка данных по профилю
-currentUserName.textContent = fromServerUserProfile.name 
-currentUserDescription.textContent = fromServerUserProfile.about
-curentUserImage.src = fromServerUserProfile.avatar
