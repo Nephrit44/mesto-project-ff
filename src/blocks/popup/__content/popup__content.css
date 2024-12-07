@@ -9,6 +9,10 @@
   padding: 34px 36px;
 }
 
+.popup__content_confirmation{
+  min-height: auto;
+}
+
 @media screen and (max-width: 568px) {
   .popup__content {
     width: 100%;

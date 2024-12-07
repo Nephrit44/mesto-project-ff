@@ -1,8 +1,9 @@
-export { apiGETRequest, apiPATCHRequest, apiPOSTRequest };
+export { apiGETRequest, apiPATCHRequest, apiPOSTRequest, apiDELETERequest  };
+const regKey = "321598a9-d89b-4d5f-b00c-2b7762da8c14";
 
-// ============= Получение данных =================
-function apiGETRequest(path, requestParametr, regKey) {
-  return fetch(path + requestParametr, {
+// ============= Получение данных пользователя или карточек =================
+function apiGETRequest(apiParametrs) {
+  return fetch(apiParametrs, {
     method: "GET",
     headers: {
       authorization: regKey,
@@ -11,15 +12,13 @@ function apiGETRequest(path, requestParametr, regKey) {
   }).then((res) => getResponseData(res));
 }
 
-// ============= Отправка данных =================
+// ============= Отправка новых данных пользователя на сервер =================
 function apiPATCHRequest(
-  path,
-  requestParametr,
-  regKey,
+  apiParametrs,
   newUserName,
   newUserDescription
 ) {
-  return fetch(path + requestParametr, {
+  return fetch(apiParametrs, {
     method: "PATCH",
     headers: {
       authorization: regKey,
@@ -32,15 +31,13 @@ function apiPATCHRequest(
   }).then((res) => getResponseData(res));
 }
 
-// ============= Отправка данных =================
+// ============= Добавление новой карточки на сервер =================
 function apiPOSTRequest(
-  path,
-  requestParametr,
-  regKey,
+  apiParametrs,
   newCardName,
   newCardLink
 ) {
-  return fetch(path + requestParametr, {
+  return fetch(apiParametrs, {
     method: "POST",
     headers: {
       authorization: regKey,
@@ -50,6 +47,20 @@ function apiPOSTRequest(
       name: newCardName,
       link: newCardLink,
     }),
+  }).then((res) => getResponseData(res));
+}
+
+// ============= Удаление выбранной карточки на сервере =================
+function apiDELETERequest(
+  apiParametrs,
+  card_id,
+) {
+  return fetch(apiParametrs + card_id, {
+    method: "DELETE",
+    headers: {
+      authorization: regKey,
+      "Content-Type": "application/json",
+    }
   }).then((res) => getResponseData(res));
 }
 

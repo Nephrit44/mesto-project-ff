@@ -2,7 +2,11 @@ import { initialCards } from "./scripts/cards.js";
 import { createCard, onLikeCard, onDeleteCard } from "./scripts/card.js";
 import { openPopup, closePopup, popupCloseByOverlay } from "./scripts/modal.js";
 import { enableValidation, clearValidation } from "./scripts/validation.js";
-import { apiGETRequest, apiPATCHRequest, apiPOSTRequest } from "./scripts/api.js";
+import {
+  apiGETRequest,
+  apiPATCHRequest,
+  apiPOSTRequest,
+} from "./scripts/api.js";
 import "./pages/index.css";
 
 export { openImagePopup };
@@ -12,10 +16,10 @@ const placesList = document.querySelector(".places__list"); //Место куд�
 const profileEditButton = document.querySelector(".profile__edit-button"); //Кнопка редактирование профиля
 const newCardAddButton = document.querySelector(".profile__add-button"); //Кнопка создание карточки
 
-const path = "https://nomoreparties.co/v1/wff-cohort-28/";
-const regKey = "321598a9-d89b-4d5f-b00c-2b7762da8c14";
-const getUserProfile = "users/me";
-const getCardCollection = "cards";
+const apiParametrs = {
+  pathProfile: "https://nomoreparties.co/v1/wff-cohort-28/users/me/",
+  pathCardCollection: "https://nomoreparties.co/v1/wff-cohort-28/cards/",
+};
 
 const validationConfig = {
   formSelector: ".popup__form", //Формы в которых ищем
@@ -44,13 +48,17 @@ const basicConfig = {
   //Остальные элементы
   buttonClose: ".popup__close",
   windowAnimated: "popup_is-animated",
-}
+};
 
 //Модалка увеличение картинки
-const popupImageForm = document.querySelector(basicConfig.windowImage); 
-const popupImageFormCloseButton = popupImageForm.querySelector(basicConfig.buttonClose); 
-const popupImageTitle = popupImageForm.querySelector(basicConfig.formImageTitle); 
-const popupImageLink = popupImageForm.querySelector(basicConfig.formImageLink); 
+const popupImageForm = document.querySelector(basicConfig.windowImage);
+const popupImageFormCloseButton = popupImageForm.querySelector(
+  basicConfig.buttonClose
+);
+const popupImageTitle = popupImageForm.querySelector(
+  basicConfig.formImageTitle
+);
+const popupImageLink = popupImageForm.querySelector(basicConfig.formImageLink);
 addAnimated(popupImageForm); //Анимация на окно
 popupCloseByOverlay(popupImageForm); //Закрытия окна по оверлею
 popupImageFormCloseButton.addEventListener("click", function () {
@@ -58,14 +66,18 @@ popupImageFormCloseButton.addEventListener("click", function () {
 }); //Закрытие окна по крестику
 
 //Модалка редактирование профиля
-const popupEditProfile = document.querySelector(basicConfig.windowEditProfile); 
-const formsTypeEdit = document.forms[basicConfig.formEditProfile]; 
-const popupProfileCloseButton = popupEditProfile.querySelector(basicConfig.buttonClose); 
+const popupEditProfile = document.querySelector(basicConfig.windowEditProfile);
+const formsTypeEdit = document.forms[basicConfig.formEditProfile];
+const popupProfileCloseButton = popupEditProfile.querySelector(
+  basicConfig.buttonClose
+);
 const popupUserNameInput = formsTypeEdit.name; //Новое имя профиля
 const popupUserDescriptionInput = formsTypeEdit.description; //новое описание профиля
-const currentUserName = document.querySelector(basicConfig.onPageUserName); 
-const currentUserDescription = document.querySelector(basicConfig.onPageUserDescription); 
-const curentUserImage = document.querySelector(basicConfig.onPageUserAvatar); 
+const currentUserName = document.querySelector(basicConfig.onPageUserName);
+const currentUserDescription = document.querySelector(
+  basicConfig.onPageUserDescription
+);
+const curentUserImage = document.querySelector(basicConfig.onPageUserAvatar);
 
 addAnimated(popupEditProfile); //Анимация на окно
 popupCloseByOverlay(popupEditProfile); //Закрытия окна по оверлею
@@ -73,28 +85,32 @@ modalFormClickListener(
   formsTypeEdit,
   popupEditProfile,
   saveUserDataFromPopupToPage
-); 
+);
 //Submit в окне редактивароя профиля
 popupProfileCloseButton.addEventListener("click", function () {
   clearValidation(formsTypeEdit, validationConfig);
   closePopup(popupEditProfile); //Закрытие окна по крестику
-}); 
+});
 
 //Модалка новая карточка
-const popupNewCard = document.querySelector(basicConfig.windowNewCard); 
-const popupNewCardCloseButton = popupNewCard.querySelector(basicConfig.buttonClose);
+const popupNewCard = document.querySelector(basicConfig.windowNewCard);
+const popupNewCardCloseButton = popupNewCard.querySelector(
+  basicConfig.buttonClose
+);
 const formsNewCard = document.forms["new-place"]; //Форма создания новой карточки
 const popupNewPlaceInput = formsNewCard["place-name"]; //Название новой карточки
 const popupNewLinkInput = formsNewCard.link; //Ссылка на изображение для карточки
 addAnimated(popupNewCard); //Анимация на окно
 popupCloseByOverlay(popupNewCard); //Закрытия окна по оверлею
-modalFormClickListener(formsNewCard, popupNewCard, createNewUserCard); 
+modalFormClickListener(formsNewCard, popupNewCard, createNewUserCard);
 //Submit в окне новая карточка
 popupNewCardCloseButton.addEventListener("click", function () {
   clearValidation(formsTypeEdit, validationConfig);
   closePopup(popupNewCard); //Закрытие окна по крестику
-}); 
+});
 
+//Модалка запрос на удаление
+const popupConfirmDelete = document.querySelector(basicConfig.windowDelete);
 
 //Слушалка нажатия на редактирование профиля
 profileEditButton.addEventListener("click", function () {
@@ -128,8 +144,11 @@ function modalFormClickListener(curentForm, curentModalWindow, actionFunction) {
 
 //Выводим новые данные пользователя на страницу
 function saveUserDataFromPopupToPage() {
-
-  const saveServerUserProfile =  apiPATCHRequest(path, getUserProfile, regKey, popupUserNameInput.value, popupUserDescriptionInput.value); //Отправка на сервер новых данных по профилю
+  const saveServerUserProfile = apiPATCHRequest(
+    apiParametrs,
+    popupUserNameInput.value,
+    popupUserDescriptionInput.value
+  ); //Отправка на сервер новых данных по профилю
   currentUserName.textContent = popupUserNameInput.value;
   currentUserDescription.textContent = popupUserDescriptionInput.value;
   closePopup(popupEditProfile);
@@ -147,23 +166,31 @@ function addAnimated(form) {
 
 //Создание пользовательской карточки
 function createNewUserCard() {
-  const saveServerUserProfile =  apiPOSTRequest(path, getCardCollection, regKey, popupNewPlaceInput.value, popupNewLinkInput.value); //Отправка на сервер новых данных по карточке
-  console.log(saveServerUserProfile);
-  const newCardObject = {
-    name: popupNewPlaceInput.value,
-    link: popupNewLinkInput.value,
-  };
-  placesList.prepend(
-    createCard(newCardObject, onDeleteCard, onLikeCard, openImagePopup)
-  );
+  const saveServerUserProfile = apiPOSTRequest(
+    apiParametrs.pathCardCollection,
+    popupNewPlaceInput.value,
+    popupNewLinkInput.value
+  ) //Отправка на сервер новых данных по карточке
+    .then((res) => {
+
+      console.log(res.likes.length)
+      const newCardObject = {
+        name: popupNewPlaceInput.value,
+        link: popupNewLinkInput.value,
+        owner: res.owner,
+        like: res.likes.length,
+      };
+      placesList.prepend(
+        createCard(newCardObject, onDeleteCard, onLikeCard, openImagePopup, apiParametrs)
+      );
+    })
 }
 
 enableValidation(validationConfig);
 
-
 //================================================= API =========================================================
-const fromServerCardsCollection =  await(apiGETRequest(path, getCardCollection, regKey)); //Получение карточек
-const fromServerUserProfile =  await(apiGETRequest(path, getUserProfile, regKey)); //Получение профиля
+const fromServerUserProfile = await apiGETRequest(apiParametrs.pathProfile); //Получение профиля
+const fromServerCardsCollection = await apiGETRequest(apiParametrs.pathCardCollection); //Получение карточек
 
 //Загрузка данных по профилю
 userID = fromServerUserProfile._id;
@@ -172,8 +199,8 @@ currentUserDescription.textContent = fromServerUserProfile.about;
 curentUserImage.src = fromServerUserProfile.avatar;
 
 //Загрузка списка карточек из базы
-fromServerCardsCollection .forEach((cardData) => {
+fromServerCardsCollection.forEach((cardData) => {
   placesList.append(
-    createCard(cardData, onDeleteCard, onLikeCard, openImagePopup, userID)
+    createCard(cardData, onDeleteCard, onLikeCard, openImagePopup, userID, apiParametrs)
   );
 });
