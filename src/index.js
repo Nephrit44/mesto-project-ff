@@ -2,7 +2,7 @@ import { initialCards } from "./scripts/cards.js";
 import { createCard, onLikeCard, onDeleteCard } from "./scripts/card.js";
 import { openPopup, closePopup, popupCloseByOverlay } from "./scripts/modal.js";
 import { enableValidation, clearValidation } from "./scripts/validation.js";
-import { apiGETRequest, apiPATCHRequest } from "./scripts/api.js";
+import { apiGETRequest, apiPATCHRequest, apiPOSTRequest } from "./scripts/api.js";
 import "./pages/index.css";
 
 export { openImagePopup };
@@ -39,6 +39,7 @@ const basicConfig = {
   formImageLink: ".popup__image", //Место на ссылку в модальном окне
   //Создание новой карточки
   windowNewCard: ".popup_type_new-card", //Окно для новой карточки
+  counterLike: ".card__like-count", //Для счётчика лайков
   //Остальные элементы
   buttonClose: ".popup__close",
   windowAnimated: "popup_is-animated",
@@ -127,7 +128,7 @@ function modalFormClickListener(curentForm, curentModalWindow, actionFunction) {
 //Выводим новые данные пользователя на страницу
 function saveUserDataFromPopupToPage() {
 
-  const saveServerUserProfile =  apiPATCHRequest(path, getUserProfile, regKey, popupUserNameInput.value, popupUserDescriptionInput.value); //Отправка на сервер новых данных
+  const saveServerUserProfile =  apiPATCHRequest(path, getUserProfile, regKey, popupUserNameInput.value, popupUserDescriptionInput.value); //Отправка на сервер новых данных по профилю
   currentUserName.textContent = popupUserNameInput.value;
   currentUserDescription.textContent = popupUserDescriptionInput.value;
   closePopup(popupEditProfile);
@@ -145,6 +146,8 @@ function addAnimated(form) {
 
 //Создание пользовательской карточки
 function createNewUserCard() {
+  const saveServerUserProfile =  apiPOSTRequest(path, getCardCollection, regKey, popupNewPlaceInput.value, popupNewLinkInput.value); //Отправка на сервер новых данных по карточке
+  console.log(saveServerUserProfile);
   const newCardObject = {
     name: popupNewPlaceInput.value,
     link: popupNewLinkInput.value,

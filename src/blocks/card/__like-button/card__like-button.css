@@ -1,8 +1,8 @@
 .card__like-button {
   width: 21px;
   height: 18px;
-  background: transparent url('../../../images/like-inactive.svg') no-repeat;
-  
+  background: transparent url("../../../images/like-inactive.svg") no-repeat;
+
   background-size: 21px 18px;
   border: none;
   cursor: pointer;
@@ -17,4 +17,18 @@
 
 .card__like-button:hover {
   opacity: 0.6;
+}
+
+.verical-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.card__like-count {
+  color: #000;
+  text-align: center;
+  font-family: Inter;
+  font-size: 13px;
+  font-weight: 400;
 }

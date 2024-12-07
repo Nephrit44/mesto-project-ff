@@ -1,18 +1,30 @@
 
 export { createCard, onLikeCard, onDeleteCard };
 
-const cardTemplate = document.querySelector("#card-template").content; //Макет под карточки
+const basicConfig = {
+  templateCard: "#card-template", //Заготовка под карточку
+  basicCard: ".card", //Клон карточки из заготовки
+  placeForImage: ".card__image", //Место на карточке под картинку
+  basicCardName: ".card__title", //Заголовок на карточке
+  basicCardDeleteButton: ".card__delete-button", //Кнопка для удаления на карточке
+  basicCardLikeButton: ".card__like-button", //Кнопка лайков на карточке
+  basicCardLikeCouner: ".card__like-count", //Счётчик лайков на карточке
+};
+
+const cardTemplate = document.querySelector(basicConfig.templateCard).content; 
 
 function createCard(cardData, onDeleteCard, onLikeCard, openImagePopup) {
-  const copyCard = cardTemplate.querySelector(".card").cloneNode(true); //Сделали копию карточки
-  const cardImage = copyCard.querySelector(".card__image"); //Нашли картинку
-  const cardTitle = copyCard.querySelector(".card__title"); //Нашли заголовок
-  const cardDeleteButton = copyCard.querySelector(".card__delete-button"); //Нашли кнопку с удалением
-  const cardLikeButton = copyCard.querySelector(".card__like-button"); //Нашли кнопку для лайков
+  const copyCard = cardTemplate.querySelector(basicConfig.basicCard).cloneNode(true); 
+  const cardImage = copyCard.querySelector(basicConfig.placeForImage); 
+  const cardTitle = copyCard.querySelector(basicConfig.basicCardName); 
+  const cardDeleteButton = copyCard.querySelector(basicConfig.basicCardDeleteButton);
+  const cardLikeButton = copyCard.querySelector(basicConfig.basicCardLikeButton);
+  const cardLikeCounter = copyCard.querySelector(basicConfig.basicCardLikeCouner)
 
   cardTitle.textContent = cardData.name; //Имя картинки
   cardImage.src = cardData.link; //Ссылка на картинку
   cardImage.alt = cardData.name; //Альтернативное описание картинки
+  cardLikeCounter.textContent = cardData.likes.length //Количество лайков
 
   cardDeleteButton.addEventListener('click', () => onDeleteCard(copyCard));
   cardLikeButton.addEventListener('click', () => onLikeCard(cardLikeButton));
