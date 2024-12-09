@@ -2,9 +2,7 @@ import { initialCards } from "./scripts/cards.js";
 import { createCard, onLikeCard, onDeleteCard } from "./scripts/card.js";
 import { openPopup, closePopup, popupCloseByOverlay } from "./scripts/modal.js";
 import { enableValidation, clearValidation } from "./scripts/validation.js";
-import {
-  callFetch,
-} from "./scripts/api.js";
+import { callFetch } from "./scripts/api.js";
 import "./pages/index.css";
 
 export { openImagePopup };
@@ -74,8 +72,8 @@ const popupProfileCloseButton = popupEditProfile.querySelector(
 );
 const popupUserNameInput = formsTypeEdit.name; //Новое имя профиля
 const popupUserDescriptionInput = formsTypeEdit.description; //новое описание профиля
-const currentUserName = document.querySelector(basicConfig.onPageUserName);
-const currentUserDescription = document.querySelector(
+const onPageUserName = document.querySelector(basicConfig.onPageUserName);
+const onPageUserDescription = document.querySelector(
   basicConfig.onPageUserDescription
 );
 const curentUserImage = document.querySelector(basicConfig.onPageUserAvatar);
@@ -85,7 +83,7 @@ popupCloseByOverlay(popupEditProfile); //Закрытия окна по овер
 modalFormClickListener(
   formsTypeEdit,
   popupEditProfile,
-  saveUserDataFromPopupToPage
+  saveUserDataFromPopupToPage,
 );
 //Submit в окне редактивароя профиля
 popupProfileCloseButton.addEventListener("click", function () {
@@ -112,15 +110,19 @@ popupNewCardCloseButton.addEventListener("click", function () {
 
 //Слушалка нажатия на редактирование профиля
 profileEditButton.addEventListener("click", function () {
-  popupUserNameInput.value = currentUserName.textContent;
-  popupUserDescriptionInput.value = currentUserDescription.textContent;
+  popupUserNameInput.value = onPageUserName.textContent;
+  popupUserDescriptionInput.value = onPageUserDescription.textContent;
   openPopup(popupEditProfile);
 });
 
 //Модалка удаления выбранной карточки
 const windowForDelete = document.querySelector(basicConfig.windowDelete);
-const buttonConfirmationDelete = windowForDelete.querySelector(basicConfig.confirmationDeleteButton);
-const windowForDeleteCloseButton = windowForDelete.querySelector(basicConfig.buttonClose);
+const buttonConfirmationDelete = windowForDelete.querySelector(
+  basicConfig.confirmationDeleteButton
+);
+const windowForDeleteCloseButton = windowForDelete.querySelector(
+  basicConfig.buttonClose
+);
 addAnimated(windowForDelete); //Анимация на окно
 popupCloseByOverlay(windowForDelete); //Закрытия окна по оверлею
 windowForDeleteCloseButton.addEventListener("click", function () {
@@ -153,14 +155,22 @@ function modalFormClickListener(curentForm, curentModalWindow, actionFunction) {
 
 //Выводим новые данные пользователя на страницу
 function saveUserDataFromPopupToPage() {
-  const saveServerUserProfile = apiPATCHRequest(
-    apiParametrs,
-    popupUserNameInput.value,
-    popupUserDescriptionInput.value
-  ); //Отправка на сервер новых данных по профилю
-  currentUserName.textContent = popupUserNameInput.value;
-  currentUserDescription.textContent = popupUserDescriptionInput.value;
-  closePopup(popupEditProfile);
+  let sendData = {
+    name: popupUserNameInput.value,
+    about: popupUserDescriptionInput.value,
+  };
+  try {
+    let test = callFetch(userURL, "PATCH", sendData)
+
+    test.then(resolve => {
+      onPageUserName.textContent = sendData.name;
+      onPageUserDescription.textContent = sendData.about;
+      closePopup(popupEditProfile);
+    })
+     
+  } catch (error) {
+    alert("Данные не сохранены"+error);
+  }
 }
 
 //Сброс формы в Default
@@ -181,8 +191,7 @@ function createNewUserCard() {
     popupNewLinkInput.value
   ) //Отправка на сервер новых данных по карточке
     .then((res) => {
-
-      console.log(res.likes.length)
+      console.log(res.likes.length);
       const newCardObject = {
         name: popupNewPlaceInput.value,
         link: popupNewLinkInput.value,
@@ -190,19 +199,28 @@ function createNewUserCard() {
         like: res.likes.length,
       };
       placesList.prepend(
-        createCard(newCardObject, onDeleteCard, onLikeCard, openImagePopup, apiParametrs)
+        createCard(
+          newCardObject,
+          onDeleteCard,
+          onLikeCard,
+          openImagePopup,
+          apiParametrs
+        )
       );
-    })
+    });
 }
 
-const cardDelete = function createPopupConfirmatinDelete(cardID, removedElemetn){
+const cardDelete = function createPopupConfirmatinDelete(
+  cardID,
+  removedElemetn
+) {
   windowForDelete.classList.add(basicConfig.showElement);
   buttonConfirmationDelete.addEventListener("click", function () {
-    callFetch(cardURL+cardID, "DELETE")
-    removedElemetn.remove();  
+    callFetch(cardURL + cardID, "DELETE");
+    removedElemetn.remove();
     closePopup(windowForDelete);
   });
-}
+};
 
 enableValidation(validationConfig);
 
@@ -214,17 +232,22 @@ let sendData = {
 };
 //callFetch(cardURL, "POST", sendData)
 
-
 Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
   .then(([user, cards]) => {
-
-    currentUserName.textContent = user.name;
-    currentUserDescription.textContent = user.about;
+    onPageUserName.textContent = user.name;
+    onPageUserDescription.textContent = user.about;
     curentUserImage.src = user.avatar;
 
     cards.forEach((cardData) => {
       placesList.append(
-        createCard(cardData, onDeleteCard, onLikeCard, openImagePopup, user, cardDelete)
+        createCard(
+          cardData,
+          onDeleteCard,
+          onLikeCard,
+          openImagePopup,
+          user,
+          cardDelete
+        )
       );
     });
   })
