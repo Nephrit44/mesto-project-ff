@@ -1,5 +1,4 @@
 export { createCard, onLikeCard, onDeleteCard };
-import { apiDELETERequest } from "./api.js";
 
 const basicConfig = {
   templateCard: "#card-template", //Заготовка под карточку
@@ -10,10 +9,6 @@ const basicConfig = {
   basicCardDeleteButtonHide: "card__delete-button-hide", //Свойство скрывания кнопки удаления не своей карточки
   basicCardLikeButton: ".card__like-button", //Кнопка лайков на карточке
   basicCardLikeCouner: ".card__like-count", //Счётчик лайков на карточке
-  //Удаление записи
-  windowDelete: ".popup_type_confirmation_delete", //Окно для подтверждения удаления
-  showElement: "popup_is-opened", //Вывод элемента на экран
-  confirmationDeleteButton: ".popup__confirmation-button", //Кнопка подтверждения удаления
 };
 
 const cardTemplate = document.querySelector(basicConfig.templateCard).content;
@@ -23,8 +18,8 @@ function createCard(
   onDeleteCard,
   onLikeCard,
   openImagePopup,
-  userID,
-  apiParametrs
+  userData,
+  cardDeleteFunction
 ) {
   const copyCard = cardTemplate
     .querySelector(basicConfig.basicCard)
@@ -48,14 +43,13 @@ function createCard(
   //Если ID пользователя получение при загрузке профиля совпадает с ID из базы
   //добавляем слушалку на уделение, если нет прячем
 
-  if (userID === cardData.owner._id) {
+  if (userData._id === cardData.owner._id) {
     cardDeleteButton.addEventListener("click", () =>
-      onDeleteCard(copyCard, apiParametrs, cardData._id)
+      onDeleteCard(copyCard, cardDeleteFunction, userData, cardData)
     );
   } else {
     cardDeleteButton.classList.add(basicConfig.basicCardDeleteButtonHide);
   }
-
   cardLikeButton.addEventListener("click", () => onLikeCard(cardLikeButton));
   cardImage.addEventListener("click", () => openImagePopup(cardData));
 
@@ -68,19 +62,7 @@ function onLikeCard(cardLikeButton) {
 }
 
 //Удаление элемента
-function onDeleteCard(element, apiParametrs, card_id) {
-  const windowForDelete = document.querySelector(basicConfig.windowDelete);
-  windowForDelete.classList.add(basicConfig.showElement);
-
-  const buttonDelete = windowForDelete.querySelector(
-    basicConfig.confirmationDeleteButton
-  );
-  buttonDelete.addEventListener("click", function () {
-    const saveServerUserProfile = apiDELETERequest(
-      apiParametrs.pathCardCollection,
-      card_id
-    ); //Удаление карточки
-    console.log(saveServerUserProfile);
-  });
-  element.remove();
+function onDeleteCard(element, cardDeleteFunction, userData, cardData) {
+  const resultFunction = cardDeleteFunction(cardData._id, element);
 }
+

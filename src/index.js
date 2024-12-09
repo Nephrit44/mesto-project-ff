@@ -3,24 +3,21 @@ import { createCard, onLikeCard, onDeleteCard } from "./scripts/card.js";
 import { openPopup, closePopup, popupCloseByOverlay } from "./scripts/modal.js";
 import { enableValidation, clearValidation } from "./scripts/validation.js";
 import {
-  apiGETRequest,
-  apiPATCHRequest,
-  apiPOSTRequest,
+  callFetch,
 } from "./scripts/api.js";
 import "./pages/index.css";
 
 export { openImagePopup };
 //Общие переменные
-let userID = ""; //Пользовательское ID
 const placesList = document.querySelector(".places__list"); //Место куда вставляются карточки
 const profileEditButton = document.querySelector(".profile__edit-button"); //Кнопка редактирование профиля
 const newCardAddButton = document.querySelector(".profile__add-button"); //Кнопка создание карточки
 
-const apiParametrs = {
-  pathProfile: "https://nomoreparties.co/v1/wff-cohort-28/users/me/",
-  pathCardCollection: "https://nomoreparties.co/v1/wff-cohort-28/cards/",
-};
+//Переменные для запросов
+const userURL = "users/me/";
+const cardURL = "cards/";
 
+//Параметры для валидации
 const validationConfig = {
   formSelector: ".popup__form", //Формы в которых ищем
   inputSelector: ".popup__input", //Инпуты в формах
@@ -48,6 +45,10 @@ const basicConfig = {
   //Остальные элементы
   buttonClose: ".popup__close",
   windowAnimated: "popup_is-animated",
+  //Удаление карточки
+  windowDelete: ".popup_type_confirmation_delete", //Окно для подтверждения удаления
+  showElement: "popup_is-opened", //Вывод элемента на экран
+  confirmationDeleteButton: ".popup__confirmation-button", //Кнопка подтверждения удаления
 };
 
 //Модалка увеличение картинки
@@ -109,14 +110,22 @@ popupNewCardCloseButton.addEventListener("click", function () {
   closePopup(popupNewCard); //Закрытие окна по крестику
 });
 
-//Модалка запрос на удаление
-const popupConfirmDelete = document.querySelector(basicConfig.windowDelete);
-
 //Слушалка нажатия на редактирование профиля
 profileEditButton.addEventListener("click", function () {
   popupUserNameInput.value = currentUserName.textContent;
   popupUserDescriptionInput.value = currentUserDescription.textContent;
   openPopup(popupEditProfile);
+});
+
+//Модалка удаления выбранной карточки
+const windowForDelete = document.querySelector(basicConfig.windowDelete);
+const buttonConfirmationDelete = windowForDelete.querySelector(basicConfig.confirmationDeleteButton);
+const windowForDeleteCloseButton = windowForDelete.querySelector(basicConfig.buttonClose);
+addAnimated(windowForDelete); //Анимация на окно
+popupCloseByOverlay(windowForDelete); //Закрытия окна по оверлею
+windowForDeleteCloseButton.addEventListener("click", function () {
+  clearValidation(formsTypeEdit, validationConfig);
+  closePopup(windowForDelete); //Закрытие окна по крестику
 });
 
 //Создание новой карточки
@@ -186,21 +195,48 @@ function createNewUserCard() {
     })
 }
 
+const cardDelete = function createPopupConfirmatinDelete(cardID, removedElemetn){
+  windowForDelete.classList.add(basicConfig.showElement);
+  buttonConfirmationDelete.addEventListener("click", function () {
+    callFetch(cardURL+cardID, "DELETE")
+    removedElemetn.remove();  
+    closePopup(windowForDelete);
+  });
+}
+
 enableValidation(validationConfig);
 
 //================================================= API =========================================================
-const fromServerUserProfile = await apiGETRequest(apiParametrs.pathProfile); //Получение профиля
-const fromServerCardsCollection = await apiGETRequest(apiParametrs.pathCardCollection); //Получение карточек
 
-//Загрузка данных по профилю
-userID = fromServerUserProfile._id;
-currentUserName.textContent = fromServerUserProfile.name;
-currentUserDescription.textContent = fromServerUserProfile.about;
-curentUserImage.src = fromServerUserProfile.avatar;
+let sendData = {
+  name: "TEST",
+  link: "https://media.istockphoto.com/id/2154066815/ru/векторная/прозрачные-руки-сделанные-из-букв-печатающих-иллюстрацию.jpg?s=2048x2048&w=is&k=20&c=vRharkKqF-vclWrUhJmmNoK4IFX53WZr9Dkwl81o7P4=",
+};
+//callFetch(cardURL, "POST", sendData)
 
-//Загрузка списка карточек из базы
-fromServerCardsCollection.forEach((cardData) => {
-  placesList.append(
-    createCard(cardData, onDeleteCard, onLikeCard, openImagePopup, userID, apiParametrs)
-  );
-});
+
+Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
+  .then(([user, cards]) => {
+
+    currentUserName.textContent = user.name;
+    currentUserDescription.textContent = user.about;
+    curentUserImage.src = user.avatar;
+
+    cards.forEach((cardData) => {
+      placesList.append(
+        createCard(cardData, onDeleteCard, onLikeCard, openImagePopup, user, cardDelete)
+      );
+    });
+  })
+  .catch((err) => {
+    console.error("Ошибка получения данных пользователя и карточек:", err);
+
+    basicConfig.onPageUserName = "Не найден";
+    basicConfig.onPageUserDescription = "Не найден";
+
+    initialCards.forEach((card) => {
+      placesList.append(
+        createCard(card, onDeleteCard, onLikeCard, openImagePopup)
+      );
+    });
+  });
