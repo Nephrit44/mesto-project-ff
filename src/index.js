@@ -15,6 +15,7 @@ const newCardAddButton = document.querySelector(".profile__add-button"); //Кн�
 let curentUserID = "";
 const userURL = "users/me/";
 const cardURL = "cards/";
+const cardLikes = "cards/likes/"
 
 //Параметры для валидации
 const validationConfig = {
@@ -84,7 +85,7 @@ popupCloseByOverlay(popupEditProfile); //Закрытия окна по овер
 modalFormClickListener(
   formsTypeEdit,
   popupEditProfile,
-  saveUserDataFromPopupToPage,
+  saveUserDataFromPopupToPage
 );
 //Submit в окне редактивароя профиля
 popupProfileCloseButton.addEventListener("click", function () {
@@ -161,16 +162,15 @@ function saveUserDataFromPopupToPage() {
     about: popupUserDescriptionInput.value,
   };
   try {
-    let updateUserData = callFetch(userURL, "PATCH", sendData)
+    let updateUserData = callFetch(userURL, "PATCH", sendData);
 
-    updateUserData.then(resolve => {
+    updateUserData.then((resolve) => {
       onPageUserName.textContent = sendData.name;
       onPageUserDescription.textContent = sendData.about;
       closePopup(popupEditProfile);
-    })
-     
+    });
   } catch (error) {
-    alert("Данные не сохранены"+error);
+    alert("Данные не сохранены" + error);
   }
 }
 
@@ -191,19 +191,27 @@ function createNewUserCard() {
     link: popupNewLinkInput.value,
   };
   try {
-    let test = callFetch(cardURL, "POST", sendData)
-    test.then(resolve => {
-      placesList.prepend(createCard(resolve, onDeleteCard, onLikeCard, openImagePopup, curentUserID, cardDelete));
+    let test = callFetch(cardURL, "POST", sendData);
+    test.then((resolve) => {
+      placesList.prepend(
+        createCard(
+          resolve,
+          onDeleteCard,
+          onLikeCard,
+          openImagePopup,
+          curentUserID,
+          cardDeleteFunction
+        )
+      );
       closePopup(popupNewCard);
-    })
-     
+    });
   } catch (error) {
-    alert("Данные не сохранены"+error);
+    alert("Данные не сохранены" + error);
   }
 }
 
 //Функция удаления выбранной карточки
-const cardDelete = function createPopupConfirmatinDelete(
+const cardDeleteFunction = function createPopupConfirmatinDelete(
   cardID,
   removedElemetn
 ) {
@@ -213,6 +221,15 @@ const cardDelete = function createPopupConfirmatinDelete(
     removedElemetn.remove();
     closePopup(windowForDelete);
   });
+};
+
+//Функция лайкания карточки
+const cardLikeFunction = function makeLikeOnSelectedCard(cardID) {
+  try {
+    callFetch(cardLikes + cardID, "PUT");
+  } catch (error) {
+    alert("Данные не сохранены" + error);
+  }
 };
 
 enableValidation(validationConfig);
@@ -234,7 +251,8 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
           onLikeCard,
           openImagePopup,
           curentUserID,
-          cardDelete
+          cardDeleteFunction,
+          cardLikeFunction,
         )
       );
     });
@@ -251,4 +269,3 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
       );
     });
   });
-

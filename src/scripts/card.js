@@ -9,6 +9,7 @@ const basicConfig = {
   basicCardDeleteButtonHide: "card__delete-button-hide", //Свойство скрывания кнопки удаления не своей карточки
   basicCardLikeButton: ".card__like-button", //Кнопка лайков на карточке
   basicCardLikeCouner: ".card__like-count", //Счётчик лайков на карточке
+  basicCardLikeUnlike: "card__like-button_is-active", //Статус Лайка. Чёрное сердце
 };
 
 const cardTemplate = document.querySelector(basicConfig.templateCard).content;
@@ -19,7 +20,8 @@ function createCard(
   onLikeCard,
   openImagePopup,
   curentUserID,
-  cardDeleteFunction
+  cardDeleteFunction,
+  cardLikeFunction
 ) {
   const copyCard = cardTemplate
     .querySelector(basicConfig.basicCard)
@@ -39,7 +41,8 @@ function createCard(
   cardTitle.textContent = cardData.name; //Имя картинки
   cardImage.src = cardData.link; //Ссылка на картинку
   cardImage.alt = cardData.name; //Альтернативное описание картинки
-  cardLikeCounter.textContent = cardData.like; //Количество лайков
+  cardLikeCounter.textContent = cardData.likes.length; //Количество лайков
+
   //Если ID пользователя получение при загрузке профиля совпадает с ID из базы
   //добавляем слушалку на уделение, если нет прячем
 
@@ -51,19 +54,40 @@ function createCard(
     cardDeleteButton.classList.add(basicConfig.basicCardDeleteButtonHide);
   }
 
-  cardLikeButton.addEventListener("click", () => onLikeCard(cardLikeButton));
+  /*Если с моим ID в массиве лайков уже что-то есть. закрасить сердце
+  Дополнительно проверяю, что бы lik'ов было не ноль. Иначе length не работает
+  */
+  if(cardData.likes.length != 0 && curentUserID == cardData.likes[0]._id){
+    cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
+  } else {
+    cardLikeButton.classList.remove(basicConfig.basicCardLikeUnlike);
+  }
+  cardLikeButton.addEventListener("click", () =>
+    onLikeCard(
+      cardData,
+      cardLikeFunction,
+      cardLikeButton,
+      cardData.likes.length
+    )
+  );
   cardImage.addEventListener("click", () => openImagePopup(cardData));
 
   return copyCard;
 }
 
 //Для лайкания карточки
-function onLikeCard(cardLikeButton) {
-  cardLikeButton.classList.toggle("card__like-button_is-active");
+function onLikeCard(
+  cardData,
+  cardLikeFunction,
+  cardLikeButton,
+  curentLikeCounter
+) {
+  const test = cardLikeFunction(cardData._id);
+  cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
+  ardLikeCounter.textContent = curentLikeCounter + 1;
 }
 
 //Удаление элемента
 function onDeleteCard(element, cardDeleteFunction, cardData) {
   const resultFunction = cardDeleteFunction(cardData._id, element);
 }
-
