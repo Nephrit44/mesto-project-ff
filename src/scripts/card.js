@@ -18,7 +18,7 @@ function createCard(
   onDeleteCard,
   onLikeCard,
   openImagePopup,
-  userData,
+  curentUserID,
   cardDeleteFunction
 ) {
   const copyCard = cardTemplate
@@ -43,13 +43,14 @@ function createCard(
   //Если ID пользователя получение при загрузке профиля совпадает с ID из базы
   //добавляем слушалку на уделение, если нет прячем
 
-  if (userData._id === cardData.owner._id) {
+  if (curentUserID == cardData.owner._id) {
     cardDeleteButton.addEventListener("click", () =>
-      onDeleteCard(copyCard, cardDeleteFunction, userData, cardData)
+      onDeleteCard(copyCard, cardDeleteFunction, cardData)
     );
   } else {
     cardDeleteButton.classList.add(basicConfig.basicCardDeleteButtonHide);
   }
+
   cardLikeButton.addEventListener("click", () => onLikeCard(cardLikeButton));
   cardImage.addEventListener("click", () => openImagePopup(cardData));
 
@@ -62,7 +63,7 @@ function onLikeCard(cardLikeButton) {
 }
 
 //Удаление элемента
-function onDeleteCard(element, cardDeleteFunction, userData, cardData) {
+function onDeleteCard(element, cardDeleteFunction, cardData) {
   const resultFunction = cardDeleteFunction(cardData._id, element);
 }
 

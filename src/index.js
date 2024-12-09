@@ -12,6 +12,7 @@ const profileEditButton = document.querySelector(".profile__edit-button"); //К�
 const newCardAddButton = document.querySelector(".profile__add-button"); //Кнопка создание карточки
 
 //Переменные для запросов
+let curentUserID = "";
 const userURL = "users/me/";
 const cardURL = "cards/";
 
@@ -160,9 +161,9 @@ function saveUserDataFromPopupToPage() {
     about: popupUserDescriptionInput.value,
   };
   try {
-    let test = callFetch(userURL, "PATCH", sendData)
+    let updateUserData = callFetch(userURL, "PATCH", sendData)
 
-    test.then(resolve => {
+    updateUserData.then(resolve => {
       onPageUserName.textContent = sendData.name;
       onPageUserDescription.textContent = sendData.about;
       closePopup(popupEditProfile);
@@ -185,31 +186,23 @@ function addAnimated(form) {
 
 //Создание пользовательской карточки
 function createNewUserCard() {
-  const saveServerUserProfile = apiPOSTRequest(
-    apiParametrs.pathCardCollection,
-    popupNewPlaceInput.value,
-    popupNewLinkInput.value
-  ) //Отправка на сервер новых данных по карточке
-    .then((res) => {
-      console.log(res.likes.length);
-      const newCardObject = {
-        name: popupNewPlaceInput.value,
-        link: popupNewLinkInput.value,
-        owner: res.owner,
-        like: res.likes.length,
-      };
-      placesList.prepend(
-        createCard(
-          newCardObject,
-          onDeleteCard,
-          onLikeCard,
-          openImagePopup,
-          apiParametrs
-        )
-      );
-    });
+  let sendData = {
+    name: popupNewPlaceInput.value,
+    link: popupNewLinkInput.value,
+  };
+  try {
+    let test = callFetch(cardURL, "POST", sendData)
+    test.then(resolve => {
+      placesList.prepend(createCard(resolve, onDeleteCard, onLikeCard, openImagePopup, curentUserID, cardDelete));
+      closePopup(popupNewCard);
+    })
+     
+  } catch (error) {
+    alert("Данные не сохранены"+error);
+  }
 }
 
+//Функция удаления выбранной карточки
 const cardDelete = function createPopupConfirmatinDelete(
   cardID,
   removedElemetn
@@ -226,17 +219,12 @@ enableValidation(validationConfig);
 
 //================================================= API =========================================================
 
-let sendData = {
-  name: "TEST",
-  link: "https://media.istockphoto.com/id/2154066815/ru/векторная/прозрачные-руки-сделанные-из-букв-печатающих-иллюстрацию.jpg?s=2048x2048&w=is&k=20&c=vRharkKqF-vclWrUhJmmNoK4IFX53WZr9Dkwl81o7P4=",
-};
-//callFetch(cardURL, "POST", sendData)
-
 Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
   .then(([user, cards]) => {
     onPageUserName.textContent = user.name;
     onPageUserDescription.textContent = user.about;
     curentUserImage.src = user.avatar;
+    curentUserID = user._id;
 
     cards.forEach((cardData) => {
       placesList.append(
@@ -245,7 +233,7 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
           onDeleteCard,
           onLikeCard,
           openImagePopup,
-          user,
+          curentUserID,
           cardDelete
         )
       );
@@ -263,3 +251,4 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
       );
     });
   });
+
