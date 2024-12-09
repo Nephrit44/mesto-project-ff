@@ -57,19 +57,23 @@ function createCard(
   /*Если с моим ID в массиве лайков уже что-то есть. закрасить сердце
   Дополнительно проверяю, что бы lik'ов было не ноль. Иначе length не работает
   */
-  if(cardData.likes.length != 0 && curentUserID == cardData.likes[0]._id){
+
+  const dollars = cardData.likes.map( id == curentUserID);
+  console.log(dollars)
+   if(curentUserID == cardData.owner._id){
     cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
+    cardLikeButton.addEventListener("click", () =>
+      onLikeCard(
+        cardData,
+        cardLikeFunction,
+        cardLikeButton,
+        cardData.likes.length
+      )
+    );
   } else {
     cardLikeButton.classList.remove(basicConfig.basicCardLikeUnlike);
   }
-  cardLikeButton.addEventListener("click", () =>
-    onLikeCard(
-      cardData,
-      cardLikeFunction,
-      cardLikeButton,
-      cardData.likes.length
-    )
-  );
+
   cardImage.addEventListener("click", () => openImagePopup(cardData));
 
   return copyCard;
@@ -83,7 +87,8 @@ function onLikeCard(
   curentLikeCounter
 ) {
   const test = cardLikeFunction(cardData._id);
-  cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
+  console.log(cardData._id)
+  //cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
   ardLikeCounter.textContent = curentLikeCounter + 1;
 }
 
