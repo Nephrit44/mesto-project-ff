@@ -226,7 +226,7 @@ const cardDeleteFunction = function createPopupConfirmatinDelete(
 //Функция лайкания карточки
 const cardLikeFunction = function makeLikeOnSelectedCard(cardID) {
   try {
-    callFetch(cardLikes + cardID, "PUT");
+    return callFetch(cardLikes + cardID, "PUT");
   } catch (error) {
     alert("Данные не сохранены" + error);
   }

@@ -1,3 +1,5 @@
+import { forEach } from "core-js/core/array";
+
 export { createCard, onLikeCard, onDeleteCard };
 
 const basicConfig = {
@@ -41,7 +43,11 @@ function createCard(
   cardTitle.textContent = cardData.name; //Имя картинки
   cardImage.src = cardData.link; //Ссылка на картинку
   cardImage.alt = cardData.name; //Альтернативное описание картинки
-  cardLikeCounter.textContent = cardData.likes.length; //Количество лайков
+  if (typeof cardData.likes.length === "undefined") {
+    cardLikeCounter.textContent = 0;
+  }else{
+    cardLikeCounter.textContent = cardData.likes.length; //Количество лайков
+  }
 
   //Если ID пользователя получение при загрузке профиля совпадает с ID из базы
   //добавляем слушалку на уделение, если нет прячем
@@ -52,22 +58,23 @@ function createCard(
     );
   } else {
     cardDeleteButton.classList.add(basicConfig.basicCardDeleteButtonHide);
-  }
+  };
 
-  /*Если с моим ID в массиве лайков уже что-то есть. закрасить сердце
-  Дополнительно проверяю, что бы lik'ов было не ноль. Иначе length не работает
+  console.log(cardData)
+  /*
+    1. Нажал на сердце +
+    2. Посмотри есть ли в like твой ID, второй постановки like не допускается.
+    3. Нет лайка - ставь и крась сердце
   */
-
-  const dollars = cardData.likes.map( id == curentUserID);
-  console.log(dollars)
    if(curentUserID == cardData.owner._id){
+
     cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
     cardLikeButton.addEventListener("click", () =>
       onLikeCard(
         cardData,
         cardLikeFunction,
         cardLikeButton,
-        cardData.likes.length
+        cardData.likes.length,
       )
     );
   } else {
@@ -86,13 +93,22 @@ function onLikeCard(
   cardLikeButton,
   curentLikeCounter
 ) {
-  const test = cardLikeFunction(cardData._id);
-  console.log(cardData._id)
-  //cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
-  ardLikeCounter.textContent = curentLikeCounter + 1;
+  //const cardLikeAddReport = cardLikeFunction(cardData._id);
+
+    //cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
+    //cardLikeCounter.textContent = curentLikeCounter + 1;
+
 }
 
 //Удаление элемента
 function onDeleteCard(element, cardDeleteFunction, cardData) {
   const resultFunction = cardDeleteFunction(cardData._id, element);
+}
+
+
+//Проверка ставил ли я лайк ранее
+function checkingMyLikesForReplays(cardData, curentUserID) {
+  cardData.forEach((value) => {
+    console.log(value)
+  })
 }
