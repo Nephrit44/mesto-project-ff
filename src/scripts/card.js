@@ -1,4 +1,5 @@
-export { createCard, onLikeCard, onDeleteCard };
+export { createCard, onLikeCard, onDislikeCard, onDeleteCard };
+import { callFetch } from "./api.js";
 
 const basicConfig = {
   templateCard: "#card-template", //Заготовка под карточку
@@ -10,6 +11,8 @@ const basicConfig = {
   basicCardLikeButton: ".card__like-button", //Кнопка лайков на карточке
   basicCardLikeCouner: ".card__like-count", //Счётчик лайков на карточке
   basicCardLikeUnlike: "card__like-button_is-active", //Статус Лайка. Чёрное сердце
+  errorLike: "Во время установки Like, произошла ошибка",
+  errorDislike: "Во время удаления Like, произошла ошибка",
 };
 
 const cardTemplate = document.querySelector(basicConfig.templateCard).content;
@@ -17,12 +20,11 @@ const cardTemplate = document.querySelector(basicConfig.templateCard).content;
 function createCard(
   cardData,
   onDeleteCard,
-  onLikeCard,
+  cardLikes, 
   openImagePopup,
   curentUserID,
   cardDeleteFunction,
-  cardLikeFunction,
-  cardDislikeFunction
+  cardLikeFunction
 ) {
   const copyCard = cardTemplate
     .querySelector(basicConfig.basicCard)
@@ -59,22 +61,8 @@ function createCard(
     cardDeleteButton.classList.add(basicConfig.basicCardDeleteButtonHide);
   }
 
-  //Сморит дела ли я лайки ранее и если да, то красим
-  const chekRepeat = findDouble(cardData, curentUserID);
-  if (chekRepeat) {
-    cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
-  }
-
   cardLikeButton.addEventListener("click", () => {
-    const chekRepeat = findDouble(cardData, curentUserID);
-    if (chekRepeat) {
-      onDislikeCard(cardData, cardDislikeFunction, cardLikeButton, cardData.likes.length, cardLikeCounter)
-      cardLikeButton.classList.remove(basicConfig.basicCardLikeUnlike);
-    } else {
-      //Нет. Ставим
-      onLikeCard(cardData, cardLikeFunction, cardLikeButton, cardData.likes.length, cardLikeCounter);
-      cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
-    }
+    cardLikeFunction(cardData, cardLikeButton, cardLikeCounter, cardLikes);
   });
 
   cardImage.addEventListener("click", () => openImagePopup(cardData));
@@ -88,34 +76,22 @@ function onDeleteCard(element, cardDeleteFunction, cardData) {
 }
 
 //Для лайкания карточки
-function onLikeCard(cardData, cardLikeFunction, cardLikeButton, curentLikeCounter, cardLikeCounter) {
-  const cardLikeAddReport = cardLikeFunction(cardData._id);
-  cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
-  cardLikeCounter.textContent = curentLikeCounter + 1;
-}
+function onLikeCard(cardData, cardLikeButton,  cardLikeCounter, cardLikes) {
+  const cardLikeAddReport = callFetch(cardLikes + cardData._id, "PUT");
+  cardLikeAddReport.then((res) => {
+    cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
+    cardLikeCounter.textContent = res.likes.length;
+  })
+};
 
 //Для дизлайкания карточки
-function onDislikeCard(cardData, cardDislikeFunction, cardLikeButton, curentLikeCounter, cardLikeCounter) {
-  const cardDislikeAddReport = cardDislikeFunction(cardData._id);
-  cardLikeButton.classList.remove(basicConfig.basicCardLikeUnlike);
-  cardLikeCounter.textContent = curentLikeCounter - 1;
-}
+function onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikes) {
+  const cardDislikeAddReport = callFetch(cardLikes + cardData._id, "DELETE");
+  cardDislikeAddReport.then((res) => {
+    cardLikeButton.classList.remove(basicConfig.basicCardLikeUnlike);
+    cardLikeCounter.textContent = res.likes.length;
+  })
+};
 
-//Функция поиска уже установденных мною лайков
-function findDouble(cardArray, curentUserID) {
-  for (let i = 0; i <= cardArray.likes.length - 1; i++) {
-    if (cardArray.likes[i]._id === curentUserID) {
-      return true;
-    }
-  }
+//============================================================================================================
 
-  /*
-  Для себя:
-  При попытке использовать forEach в этом файле в заголовке появляется вот такая строка
-  import { forEach } from "core-js/core/array";
-  После её добавления весь проект падает. Решения, пока, нет.
-  Обращай внимание если появляется ошибка:
-  ERROR in ./src/scripts/card.js 1:0-45
-  Module not found: Error: Can't resolve 'core-js/core/array' in '/home/igor/Документы/mesto-project-ff/src/scripts'
-  */
-}

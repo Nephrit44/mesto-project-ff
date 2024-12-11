@@ -1,5 +1,5 @@
 import { initialCards } from "./scripts/cards.js";
-import { createCard, onLikeCard, onDeleteCard } from "./scripts/card.js";
+import { createCard, onDeleteCard, onLikeCard, onDislikeCard } from "./scripts/card.js";
 import { openPopup, closePopup, popupCloseByOverlay } from "./scripts/modal.js";
 import { enableValidation, clearValidation } from "./scripts/validation.js";
 import { callFetch } from "./scripts/api.js";
@@ -197,10 +197,11 @@ function createNewUserCard() {
         createCard(
           resolve,
           onDeleteCard,
-          onLikeCard,
+          cardLikes,
           openImagePopup,
           curentUserID,
-          cardDeleteFunction
+          cardDeleteFunction,
+          cardLikeFunction
         )
       );
       closePopup(popupNewCard);
@@ -223,23 +224,14 @@ const cardDeleteFunction = function createPopupConfirmatinDelete(
   });
 };
 
-//Функция лайкания карточки
-const cardLikeFunction = function makeLikeOnSelectedCard(cardID) {
-  try {
-    return callFetch(cardLikes + cardID, "PUT");
-  } catch (error) {
-    alert("Данные не сохранены" + error);
+function cardLikeFunction(cardData, cardLikeButton, cardLikeCounter, cardLikes) {
+  const chekLiked = cardLikeButton.classList.contains(basicConfig.basicCardLikeUnlike);
+  if (chekLiked) {
+    onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikes);
+  } else {
+    onLikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikes);
   }
-};
-
-//Функция ДИЗлайкания карточки
-const cardDislikeFunction = function makeDislikeOnSelectedCard(cardID) {
-  try {
-    return callFetch(cardLikes + cardID, "DELETE");
-  } catch (error) {
-    alert("Данные не сохранены" + error);
-  }
-};
+}
 
 enableValidation(validationConfig);
 
@@ -257,12 +249,11 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
         createCard(
           cardData,
           onDeleteCard,
-          onLikeCard,
+          cardLikes,
           openImagePopup,
           curentUserID,
           cardDeleteFunction,
-          cardLikeFunction,
-          cardDislikeFunction
+          cardLikeFunction
         )
       );
     });
@@ -275,7 +266,7 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
 
     initialCards.forEach((card) => {
       placesList.append(
-        createCard(card, onDeleteCard, onLikeCard, openImagePopup)
+        createCard(card, onDeleteCard, openImagePopup)
       );
     });
   });
