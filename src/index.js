@@ -232,6 +232,15 @@ const cardLikeFunction = function makeLikeOnSelectedCard(cardID) {
   }
 };
 
+//Функция ДИЗлайкания карточки
+const cardDislikeFunction = function makeDislikeOnSelectedCard(cardID) {
+  try {
+    return callFetch(cardLikes + cardID, "DELETE");
+  } catch (error) {
+    alert("Данные не сохранены" + error);
+  }
+};
+
 enableValidation(validationConfig);
 
 //================================================= API =========================================================
@@ -253,6 +262,7 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
           curentUserID,
           cardDeleteFunction,
           cardLikeFunction,
+          cardDislikeFunction
         )
       );
     });

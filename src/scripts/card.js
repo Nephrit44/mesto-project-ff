@@ -21,7 +21,8 @@ function createCard(
   openImagePopup,
   curentUserID,
   cardDeleteFunction,
-  cardLikeFunction
+  cardLikeFunction,
+  cardDislikeFunction
 ) {
   const copyCard = cardTemplate
     .querySelector(basicConfig.basicCard)
@@ -65,18 +66,14 @@ function createCard(
   }
 
   cardLikeButton.addEventListener("click", () => {
-    //Проверка ставил ли я лайк ранее
-    for (let i = 0; i <= cardData.likes.length - 1; i++) {
-      if (cardData.likes[i]._id !== curentUserID) {
-        onLikeCard(
-          cardData,
-          cardLikeFunction,
-          cardLikeButton,
-          cardData.likes.length,
-          cardLikeCounter
-        );
-        cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
-      }
+    const chekRepeat = findDouble(cardData, curentUserID);
+    if (chekRepeat) {
+      onDislikeCard(cardData, cardDislikeFunction, cardLikeButton, cardData.likes.length, cardLikeCounter)
+      cardLikeButton.classList.remove(basicConfig.basicCardLikeUnlike);
+    } else {
+      //Нет. Ставим
+      onLikeCard(cardData, cardLikeFunction, cardLikeButton, cardData.likes.length, cardLikeCounter);
+      cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
     }
   });
 
@@ -91,22 +88,34 @@ function onDeleteCard(element, cardDeleteFunction, cardData) {
 }
 
 //Для лайкания карточки
-function onLikeCard(
-  cardData,
-  cardLikeFunction,
-  cardLikeButton,
-  curentLikeCounter,
-  cardLikeCounter
-) {
+function onLikeCard(cardData, cardLikeFunction, cardLikeButton, curentLikeCounter, cardLikeCounter) {
   const cardLikeAddReport = cardLikeFunction(cardData._id);
   cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
   cardLikeCounter.textContent = curentLikeCounter + 1;
 }
 
+//Для дизлайкания карточки
+function onDislikeCard(cardData, cardDislikeFunction, cardLikeButton, curentLikeCounter, cardLikeCounter) {
+  const cardDislikeAddReport = cardDislikeFunction(cardData._id);
+  cardLikeButton.classList.remove(basicConfig.basicCardLikeUnlike);
+  cardLikeCounter.textContent = curentLikeCounter - 1;
+}
+
+//Функция поиска уже установденных мною лайков
 function findDouble(cardArray, curentUserID) {
   for (let i = 0; i <= cardArray.likes.length - 1; i++) {
     if (cardArray.likes[i]._id === curentUserID) {
       return true;
     }
   }
+
+  /*
+  Для себя:
+  При попытке использовать forEach в этом файле в заголовке появляется вот такая строка
+  import { forEach } from "core-js/core/array";
+  После её добавления весь проект падает. Решения, пока, нет.
+  Обращай внимание если появляется ошибка:
+  ERROR in ./src/scripts/card.js 1:0-45
+  Module not found: Error: Can't resolve 'core-js/core/array' in '/home/igor/Документы/mesto-project-ff/src/scripts'
+  */
 }
