@@ -43,7 +43,7 @@ function createCard(
   cardImage.alt = cardData.name; //Альтернативное описание картинки
   if (typeof cardData.likes.length === "undefined") {
     cardLikeCounter.textContent = 0;
-  } else {
+  }else{
     cardLikeCounter.textContent = cardData.likes.length; //Количество лайков
   }
 
@@ -56,38 +56,32 @@ function createCard(
     );
   } else {
     cardDeleteButton.classList.add(basicConfig.basicCardDeleteButtonHide);
-  }
+  };
 
-  //Сморит дела ли я лайки ранее и если да, то красим
-  const chekRepeat = findDouble(cardData, curentUserID);
-  if (chekRepeat) {
+  console.log(cardData)
+  /*
+    1. Нажал на сердце +
+    2. Посмотри есть ли в like твой ID, второй постановки like не допускается.
+    3. Нет лайка - ставь и крась сердце 
+  */
+   if(curentUserID == cardData.owner._id){
+
     cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
+    cardLikeButton.addEventListener("click", () =>
+      onLikeCard(
+        cardData,
+        cardLikeFunction,
+        cardLikeButton,
+        cardData.likes.length,
+      )
+    );
+  } else {
+    cardLikeButton.classList.remove(basicConfig.basicCardLikeUnlike);
   }
-
-  cardLikeButton.addEventListener("click", () => {
-    //Проверка ставил ли я лайк ранее
-    for (let i = 0; i <= cardData.likes.length - 1; i++) {
-      if (cardData.likes[i]._id !== curentUserID) {
-        onLikeCard(
-          cardData,
-          cardLikeFunction,
-          cardLikeButton,
-          cardData.likes.length,
-          cardLikeCounter
-        );
-        cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
-      }
-    }
-  });
 
   cardImage.addEventListener("click", () => openImagePopup(cardData));
 
   return copyCard;
-}
-
-//Удаление элемента
-function onDeleteCard(element, cardDeleteFunction, cardData) {
-  const resultFunction = cardDeleteFunction(cardData._id, element);
 }
 
 //Для лайкания карточки
@@ -95,18 +89,24 @@ function onLikeCard(
   cardData,
   cardLikeFunction,
   cardLikeButton,
-  curentLikeCounter,
-  cardLikeCounter
+  curentLikeCounter
 ) {
-  const cardLikeAddReport = cardLikeFunction(cardData._id);
-  cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
-  cardLikeCounter.textContent = curentLikeCounter + 1;
+  //const cardLikeAddReport = cardLikeFunction(cardData._id);
+
+    //cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
+    //cardLikeCounter.textContent = curentLikeCounter + 1;
+
 }
 
-function findDouble(cardArray, curentUserID) {
-  for (let i = 0; i <= cardArray.likes.length - 1; i++) {
-    if (cardArray.likes[i]._id === curentUserID) {
-      return true;
-    }
-  }
+//Удаление элемента
+function onDeleteCard(element, cardDeleteFunction, cardData) {
+  const resultFunction = cardDeleteFunction(cardData._id, element);
+}
+
+
+//Проверка ставил ли я лайк ранее
+function checkingMyLikesForReplays(cardData, curentUserID) {
+  cardData.forEach((value) => {
+    console.log(value)
+  })
 }
