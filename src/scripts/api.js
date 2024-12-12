@@ -27,8 +27,3 @@ function callFetch(queryURL, queryMethod, sendData) {
       return error;
     });
 }
-
-let sendData = {
-  name: "TEST",
-  link: "https://media.istockphoto.com/id/2154066815/ru/векторная/прозрачные-руки-сделанные-из-букв-печатающих-иллюстрацию.jpg?s=2048x2048&w=is&k=20&c=vRharkKqF-vclWrUhJmmNoK4IFX53WZr9Dkwl81o7P4=",
-};

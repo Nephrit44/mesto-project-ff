@@ -1,5 +1,11 @@
 import { initialCards } from "./scripts/cards.js";
-import { createCard, onLikeCard, onDislikeCard, onDeleteCard, cardBasicConfig } from "./scripts/card.js";
+import {
+  createCard,
+  onLikeCard,
+  onDislikeCard,
+  onDeleteCard,
+  cardBasicConfig,
+} from "./scripts/card.js";
 import { openPopup, closePopup, popupCloseByOverlay } from "./scripts/modal.js";
 import { enableValidation, clearValidation } from "./scripts/validation.js";
 import { callFetch } from "./scripts/api.js";
@@ -9,7 +15,7 @@ export { openImagePopup };
 
 const basicConfig = {
   //Общие параметры
-  cardList: ".places__list",//Место куда вставляются карточки
+  cardList: ".places__list", //Место куда вставляются карточки
   userProfileEditButton: ".profile__edit-button", //Кнопка редактирование профиля
   createNewCardButton: ".profile__add-button", //Кнопка создание карточки
   showElement: "popup_is-opened", //Вывод элемента на экран
@@ -37,19 +43,27 @@ const basicConfig = {
   formAvatarProfile: "new-avatar", //Форма в окне для новой аватарки
   //Ошибки
   errorUpdateUserData: "Произошла ошибка при сохранении данных пользователя",
+  errorUpdateUserAvatar:
+    "Произошла ошибка при обновлении аватарки пользователя",
+  errorNoUserAvatar: "./images/avatar.jpg",
 };
 
 //Общие переменные
-const placesList = document.querySelector(basicConfig.cardList); 
-const profileEditButton = document.querySelector(basicConfig.userProfileEditButton); 
-const newCardAddButton = document.querySelector(basicConfig.createNewCardButton); 
-const userAvatar = document.querySelector(basicConfig.onPageUserAvatar);
+const placesList = document.querySelector(basicConfig.cardList);
+const profileEditButton = document.querySelector(
+  basicConfig.userProfileEditButton
+);
+const newCardAddButton = document.querySelector(
+  basicConfig.createNewCardButton
+);
+const placeForUserAvatar = document.querySelector(basicConfig.onPageUserAvatar);
 
 //Переменные для запросов
 let curentUserID = "";
 const userURL = "users/me/";
 const cardURL = "cards/";
-const cardLikes = "cards/likes/"
+const cardLikes = "cards/likes/";
+const userAvatar = "avatar/";
 
 //Параметры для валидации
 const validationConfig = {
@@ -92,9 +106,9 @@ const curentUserImage = document.querySelector(basicConfig.onPageUserAvatar);
 
 addAnimated(popupEditProfile); //Анимация на окно
 popupCloseByOverlay(popupEditProfile); //Закрытия окна по оверлею
-userAvatar.addEventListener("click", function(){
+placeForUserAvatar.addEventListener("click", function () {
   windowForChangeAvatar.classList.add(basicConfig.showElement);
-})
+});
 modalFormClickListener(
   formsTypeEdit,
   popupEditProfile,
@@ -148,9 +162,12 @@ windowForDeleteCloseButton.addEventListener("click", function () {
 });
 
 //Модалка редактирования фотографии профиля
-const windowForChangeAvatar = document.querySelector(basicConfig.windowAvatar)
-const windowForChangeAvatarCloseButton = windowForChangeAvatar.querySelector(basicConfig.buttonClose)
+const windowForChangeAvatar = document.querySelector(basicConfig.windowAvatar);
+const windowForChangeAvatarCloseButton = windowForChangeAvatar.querySelector(
+  basicConfig.buttonClose
+);
 const formsAvatarEdit = document.forms[basicConfig.formAvatarProfile];
+const newURLUserAvatar = formsAvatarEdit["avatar-link"];
 addAnimated(windowForChangeAvatar); //Анимация на окно
 popupCloseByOverlay(windowForChangeAvatar); //Закрытия окна по оверлею
 windowForChangeAvatarCloseButton.addEventListener("click", function () {
@@ -160,12 +177,12 @@ windowForChangeAvatarCloseButton.addEventListener("click", function () {
 modalFormClickListener(
   formsAvatarEdit,
   windowForChangeAvatar,
-  saveUserDataFromPopupToPage
+  saveUserAvatarFromPopupToPage
 );
 
 //Создание новой карточки
 newCardAddButton.addEventListener("click", function () {
-  formNewCardReset();
+  formReset(formsNewCard);
   openPopup(popupNewCard);
 });
 
@@ -206,13 +223,24 @@ function saveUserDataFromPopupToPage() {
 }
 
 //Сохраняем новую аватарку польлзователя
-function saveUserAvatarFromPopupToPage(){
-  
+function saveUserAvatarFromPopupToPage() {
+  try {
+    let sendData = {
+      avatar: newURLUserAvatar.value,
+    };
+    let updateUserAvatar = callFetch(userURL + userAvatar, "PATCH", sendData);
+    updateUserAvatar.then(function (res) {
+      placeForUserAvatar.style.backgroundImage = "url('" + res.avatar + "')";
+      formReset(formsAvatarEdit);
+    });
+  } catch (error) {
+    alert(basicConfig.errorUpdateUserAvatar + error);
+  }
 }
 
 //Сброс формы в Default
-function formNewCardReset() {
-  formsNewCard.reset();
+function formReset(formName) {
+  formName.reset();
 }
 
 //Добавление стиля с плавностями
@@ -260,17 +288,21 @@ const cardDeleteFunction = function createPopupConfirmatinDelete(
   });
 };
 
-function cardLikeFunction(cardData, cardLikeButton, cardLikeCounter, cardLikes) {
-  const chekLiked = cardLikeButton.classList.contains(cardBasicConfig.basicCardLikeUnlike);
+function cardLikeFunction(
+  cardData,
+  cardLikeButton,
+  cardLikeCounter,
+  cardLikes
+) {
+  const chekLiked = cardLikeButton.classList.contains(
+    cardBasicConfig.basicCardLikeUnlike
+  );
   if (chekLiked) {
     onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikes);
   } else {
     onLikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikes);
   }
 }
-
-//Автатарка
-
 
 enableValidation(validationConfig);
 
@@ -282,6 +314,7 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
     onPageUserDescription.textContent = user.about;
     curentUserImage.src = user.avatar;
     curentUserID = user._id;
+    placeForUserAvatar.style.backgroundImage = "url('" + user.avatar + "')";
 
     cards.forEach((cardData) => {
       placesList.append(
@@ -302,8 +335,6 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
     basicConfig.onPageUserDescription = "Не найден";
 
     initialCards.forEach((card) => {
-      placesList.append(
-        createCard(card, onDeleteCard, openImagePopup)
-      );
+      placesList.append(createCard(card, onDeleteCard, openImagePopup));
     });
   });
