@@ -1,20 +1,23 @@
 export { openPopup, closePopup, popupCloseByOverlay, closingPopupPressingEsc };
 
+const modalBasicConfig = {
+  showPopup: "popup_is-opened",
+};
 
 // функция открытия модального окна
 function openPopup(popup) {
-  popup.classList.add("popup_is-opened");
+  popup.classList.add(modalBasicConfig.showPopup);
   document.addEventListener("keydown", closingPopupPressingEsc);
 }
 // функция закрытия модального окна
 function closePopup(popup) {
-  popup.classList.remove("popup_is-opened");
+  popup.classList.remove(modalBasicConfig.showPopup);
   document.removeEventListener("keydown", closingPopupPressingEsc);
 }
 // функция-обработчик события клика по оверлею
 function popupCloseByOverlay(popup) {
-  popup.addEventListener("click", function(e){
-    if(e.target.classList.contains("popup_is-opened")){
+  popup.addEventListener("click", function (e) {
+    if (e.target.classList.contains(modalBasicConfig.showPopup)) {
       closePopup(popup);
     }
   });
@@ -22,7 +25,7 @@ function popupCloseByOverlay(popup) {
 // функция-обработчик события нажатия Esc
 function closingPopupPressingEsc(e) {
   if (e.key === "Escape") {
-    const popup = document.querySelector(".popup_is-opened");
+    const popup = document.querySelector("." + modalBasicConfig.showPopup);
     closePopup(popup);
   }
-} 
+}

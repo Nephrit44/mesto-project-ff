@@ -6,29 +6,13 @@ import { callFetch } from "./scripts/api.js";
 import "./pages/index.css";
 
 export { openImagePopup };
-//Общие переменные
-const placesList = document.querySelector(".places__list"); //Место куда вставляются карточки
-const profileEditButton = document.querySelector(".profile__edit-button"); //Кнопка редактирование профиля
-const newCardAddButton = document.querySelector(".profile__add-button"); //Кнопка создание карточки
-
-//Переменные для запросов
-let curentUserID = "";
-const userURL = "users/me/";
-const cardURL = "cards/";
-const cardLikes = "cards/likes/"
-
-//Параметры для валидации
-const validationConfig = {
-  formSelector: ".popup__form", //Формы в которых ищем
-  inputSelector: ".popup__input", //Инпуты в формах
-  submitButtonSelector: ".popup__button", //Кнопки submit
-  inactiveButtonClass: "popup__button_disabled", //Кнопки submit в состоянии блокитровки
-  inputErrorClass: "popup__input_type_error", //Полоска в input
-  errorClass: "popup__error_visible", //Span сообщение
-};
 
 const basicConfig = {
-  //Элементы на странице
+  //Общие параметры
+  cardList: ".places__list",//Место куда вставляются карточки
+  userProfileEditButton: ".profile__edit-button", //Кнопка редактирование профиля
+  createNewCardButton: ".profile__add-button", //Кнопка создание карточки
+  showElement: "popup_is-opened", //Вывод элемента на экран
   onPageUserName: ".profile__title", //Текущее имя профиля
   onPageUserDescription: ".profile__description", //Текущее описание профиля
   onPageUserAvatar: ".profile__image", //Текущая фотка пользователя
@@ -47,10 +31,34 @@ const basicConfig = {
   windowAnimated: "popup_is-animated",
   //Удаление карточки
   windowDelete: ".popup_type_confirmation_delete", //Окно для подтверждения удаления
-  showElement: "popup_is-opened", //Вывод элемента на экран
   confirmationDeleteButton: ".popup__confirmation-button", //Кнопка подтверждения удаления
-
+  //Редактирование карточки профиля
+  windowAvatar: ".popup_type_avatar-card", //Окно для ввода нового URL на аватарку
+  formAvatarProfile: "new-avatar", //Форма в окне для новой аватарки
+  //Ошибки
   errorUpdateUserData: "Произошла ошибка при сохранении данных пользователя",
+};
+
+//Общие переменные
+const placesList = document.querySelector(basicConfig.cardList); 
+const profileEditButton = document.querySelector(basicConfig.userProfileEditButton); 
+const newCardAddButton = document.querySelector(basicConfig.createNewCardButton); 
+const userAvatar = document.querySelector(basicConfig.onPageUserAvatar);
+
+//Переменные для запросов
+let curentUserID = "";
+const userURL = "users/me/";
+const cardURL = "cards/";
+const cardLikes = "cards/likes/"
+
+//Параметры для валидации
+const validationConfig = {
+  formSelector: ".popup__form", //Формы в которых ищем
+  inputSelector: ".popup__input", //Инпуты в формах
+  submitButtonSelector: ".popup__button", //Кнопки submit
+  inactiveButtonClass: "popup__button_disabled", //Кнопки submit в состоянии блокитровки
+  inputErrorClass: "popup__input_type_error", //Полоска в input
+  errorClass: "popup__error_visible", //Span сообщение
 };
 
 //Модалка увеличение картинки
@@ -84,11 +92,15 @@ const curentUserImage = document.querySelector(basicConfig.onPageUserAvatar);
 
 addAnimated(popupEditProfile); //Анимация на окно
 popupCloseByOverlay(popupEditProfile); //Закрытия окна по оверлею
+userAvatar.addEventListener("click", function(){
+  windowForChangeAvatar.classList.add(basicConfig.showElement);
+})
 modalFormClickListener(
   formsTypeEdit,
   popupEditProfile,
-  saveUserDataFromPopupToPage
+  saveUserAvatarFromPopupToPage
 );
+
 //Submit в окне редактивароя профиля
 popupProfileCloseButton.addEventListener("click", function () {
   clearValidation(formsTypeEdit, validationConfig);
@@ -105,6 +117,7 @@ const popupNewPlaceInput = formsNewCard["place-name"]; //Название нов
 const popupNewLinkInput = formsNewCard.link; //Ссылка на изображение для карточки
 addAnimated(popupNewCard); //Анимация на окно
 popupCloseByOverlay(popupNewCard); //Закрытия окна по оверлею
+
 modalFormClickListener(formsNewCard, popupNewCard, createNewUserCard);
 //Submit в окне новая карточка
 popupNewCardCloseButton.addEventListener("click", function () {
@@ -133,6 +146,22 @@ windowForDeleteCloseButton.addEventListener("click", function () {
   clearValidation(formsTypeEdit, validationConfig);
   closePopup(windowForDelete); //Закрытие окна по крестику
 });
+
+//Модалка редактирования фотографии профиля
+const windowForChangeAvatar = document.querySelector(basicConfig.windowAvatar)
+const windowForChangeAvatarCloseButton = windowForChangeAvatar.querySelector(basicConfig.buttonClose)
+const formsAvatarEdit = document.forms[basicConfig.formAvatarProfile];
+addAnimated(windowForChangeAvatar); //Анимация на окно
+popupCloseByOverlay(windowForChangeAvatar); //Закрытия окна по оверлею
+windowForChangeAvatarCloseButton.addEventListener("click", function () {
+  clearValidation(formsAvatarEdit, validationConfig);
+  closePopup(windowForChangeAvatar); //Закрытие окна по крестику
+});
+modalFormClickListener(
+  formsAvatarEdit,
+  windowForChangeAvatar,
+  saveUserDataFromPopupToPage
+);
 
 //Создание новой карточки
 newCardAddButton.addEventListener("click", function () {
@@ -174,6 +203,11 @@ function saveUserDataFromPopupToPage() {
   } catch (error) {
     alert(basicConfig.errorUpdateUserData + error);
   }
+}
+
+//Сохраняем новую аватарку польлзователя
+function saveUserAvatarFromPopupToPage(){
+  
 }
 
 //Сброс формы в Default
@@ -234,6 +268,9 @@ function cardLikeFunction(cardData, cardLikeButton, cardLikeCounter, cardLikes) 
     onLikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikes);
   }
 }
+
+//Автатарка
+
 
 enableValidation(validationConfig);
 
