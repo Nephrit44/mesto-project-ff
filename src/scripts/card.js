@@ -1,7 +1,7 @@
-export { createCard, onLikeCard, onDislikeCard, onDeleteCard };
+export { createCard, onLikeCard, onDislikeCard, onDeleteCard, cardBasicConfig };
 import { callFetch } from "./api.js";
 
-const basicConfig = {
+const cardBasicConfig = {
   templateCard: "#card-template", //Заготовка под карточку
   basicCard: ".card", //Клон карточки из заготовки
   placeForImage: ".card__image", //Место на карточке под картинку
@@ -13,9 +13,10 @@ const basicConfig = {
   basicCardLikeUnlike: "card__like-button_is-active", //Статус Лайка. Чёрное сердце
   errorLike: "Во время установки Like, произошла ошибка",
   errorDislike: "Во время удаления Like, произошла ошибка",
+  errorCreateCard: "Произошла ошибка при создании карточки",
 };
 
-const cardTemplate = document.querySelector(basicConfig.templateCard).content;
+const cardTemplate = document.querySelector(cardBasicConfig.templateCard).content;
 
 function createCard(
   cardData,
@@ -27,23 +28,24 @@ function createCard(
   cardLikeFunction
 ) {
   const copyCard = cardTemplate
-    .querySelector(basicConfig.basicCard)
+    .querySelector(cardBasicConfig.basicCard)
     .cloneNode(true);
-  const cardImage = copyCard.querySelector(basicConfig.placeForImage);
-  const cardTitle = copyCard.querySelector(basicConfig.basicCardName);
+  const cardImage = copyCard.querySelector(cardBasicConfig.placeForImage);
+  const cardTitle = copyCard.querySelector(cardBasicConfig.basicCardName);
   const cardDeleteButton = copyCard.querySelector(
-    basicConfig.basicCardDeleteButton
+    cardBasicConfig.basicCardDeleteButton
   );
   const cardLikeButton = copyCard.querySelector(
-    basicConfig.basicCardLikeButton
+    cardBasicConfig.basicCardLikeButton
   );
   const cardLikeCounter = copyCard.querySelector(
-    basicConfig.basicCardLikeCouner
+    cardBasicConfig.basicCardLikeCouner
   );
 
   cardTitle.textContent = cardData.name; //Имя картинки
   cardImage.src = cardData.link; //Ссылка на картинку
   cardImage.alt = cardData.name; //Альтернативное описание картинки
+
   if (typeof cardData.likes.length === "undefined") {
     cardLikeCounter.textContent = 0;
   } else {
@@ -58,8 +60,14 @@ function createCard(
       onDeleteCard(copyCard, cardDeleteFunction, cardData)
     );
   } else {
-    cardDeleteButton.classList.add(basicConfig.basicCardDeleteButtonHide);
+    cardDeleteButton.classList.add(cardBasicConfig.basicCardDeleteButtonHide);
   }
+
+  //Если ранее лайк стоял. Красим сердце
+  if (cardData.likes.some((likeRecord) => likeRecord._id === curentUserID)) {
+    cardLikeButton.classList.add(cardBasicConfig.basicCardLikeUnlike);
+  }
+
 
   cardLikeButton.addEventListener("click", () => {
     cardLikeFunction(cardData, cardLikeButton, cardLikeCounter, cardLikes);
@@ -79,7 +87,7 @@ function onDeleteCard(element, cardDeleteFunction, cardData) {
 function onLikeCard(cardData, cardLikeButton,  cardLikeCounter, cardLikes) {
   const cardLikeAddReport = callFetch(cardLikes + cardData._id, "PUT");
   cardLikeAddReport.then((res) => {
-    cardLikeButton.classList.add(basicConfig.basicCardLikeUnlike);
+    cardLikeButton.classList.add(cardBasicConfig.basicCardLikeUnlike);
     cardLikeCounter.textContent = res.likes.length;
   })
 };
@@ -88,7 +96,7 @@ function onLikeCard(cardData, cardLikeButton,  cardLikeCounter, cardLikes) {
 function onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikes) {
   const cardDislikeAddReport = callFetch(cardLikes + cardData._id, "DELETE");
   cardDislikeAddReport.then((res) => {
-    cardLikeButton.classList.remove(basicConfig.basicCardLikeUnlike);
+    cardLikeButton.classList.remove(cardBasicConfig.basicCardLikeUnlike);
     cardLikeCounter.textContent = res.likes.length;
   })
 };

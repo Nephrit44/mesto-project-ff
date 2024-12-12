@@ -1,5 +1,5 @@
 import { initialCards } from "./scripts/cards.js";
-import { createCard, onDeleteCard, onLikeCard, onDislikeCard } from "./scripts/card.js";
+import { createCard, onLikeCard, onDislikeCard, onDeleteCard, cardBasicConfig } from "./scripts/card.js";
 import { openPopup, closePopup, popupCloseByOverlay } from "./scripts/modal.js";
 import { enableValidation, clearValidation } from "./scripts/validation.js";
 import { callFetch } from "./scripts/api.js";
@@ -49,6 +49,8 @@ const basicConfig = {
   windowDelete: ".popup_type_confirmation_delete", //Окно для подтверждения удаления
   showElement: "popup_is-opened", //Вывод элемента на экран
   confirmationDeleteButton: ".popup__confirmation-button", //Кнопка подтверждения удаления
+
+  errorUpdateUserData: "Произошла ошибка при сохранении данных пользователя",
 };
 
 //Модалка увеличение картинки
@@ -170,7 +172,7 @@ function saveUserDataFromPopupToPage() {
       closePopup(popupEditProfile);
     });
   } catch (error) {
-    alert("Данные не сохранены" + error);
+    alert(basicConfig.errorUpdateUserData + error);
   }
 }
 
@@ -207,7 +209,7 @@ function createNewUserCard() {
       closePopup(popupNewCard);
     });
   } catch (error) {
-    alert("Данные не сохранены" + error);
+    alert(cardBasicConfig.errorCreateCard + error);
   }
 }
 
@@ -225,7 +227,7 @@ const cardDeleteFunction = function createPopupConfirmatinDelete(
 };
 
 function cardLikeFunction(cardData, cardLikeButton, cardLikeCounter, cardLikes) {
-  const chekLiked = cardLikeButton.classList.contains(basicConfig.basicCardLikeUnlike);
+  const chekLiked = cardLikeButton.classList.contains(cardBasicConfig.basicCardLikeUnlike);
   if (chekLiked) {
     onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikes);
   } else {
@@ -259,8 +261,6 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
     });
   })
   .catch((err) => {
-    console.error("Ошибка получения данных пользователя и карточек:", err);
-
     basicConfig.onPageUserName = "Не найден";
     basicConfig.onPageUserDescription = "Не найден";
 
