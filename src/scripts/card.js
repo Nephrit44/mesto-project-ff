@@ -48,17 +48,21 @@ function createCard(
     cardDeleteButton.classList.add(cardBasicConfig.basicCardDeleteButtonHide);
   }
   
+  //100. "Прикручиваем" функцию для передачитекущих данных к кнопке с корзинкой
   cardDeleteButton.addEventListener("click", function() {
     onDeleteCard(cardData, copyCard);
   });   
 
-  //Если ранее лайк стоял. Красим сердце
+  //200. Если ранее лайк стоял. Красим сердце
   if (cardData.likes.some((likeRecord) => likeRecord._id === curentUserID)) {
     cardLikeButton.classList.add(cardBasicConfig.basicCardLikeUnlike);
   }
-
+  /*
+  201. создаётся функция в которую прикрепляем текущую карточку, прикрепляем функции с 
+  лайком и дизлайком + ссылку где лежат лайки
+  */
   cardLikeButton.addEventListener("click", () => {
-    cardLikeFunction(cardData, cardLikeButton, cardLikeCounter, cardLikes);
+    cardLikeFunction(cardData, cardLikeButton, cardLikeCounter, cardLikesURL);
   });
 
   cardImage.addEventListener("click", () => openImagePopup(cardData));
@@ -67,8 +71,8 @@ function createCard(
 }
 
 //Для лайкания карточки
-function onLikeCard(cardData, cardLikeButton,  cardLikeCounter, cardLikes) {
-  const cardLikeAddReport = callFetch(cardLikes + cardData._id, "PUT");
+function onLikeCard(cardData, cardLikeButton,  cardLikeCounter, cardLikesURL) {
+  const cardLikeAddReport = callFetch(cardLikesURL + cardData._id, "PUT");
   cardLikeAddReport.then((res) => {
     cardLikeButton.classList.add(cardBasicConfig.basicCardLikeUnlike);
     cardLikeCounter.textContent = res.likes.length;
@@ -76,8 +80,8 @@ function onLikeCard(cardData, cardLikeButton,  cardLikeCounter, cardLikes) {
 };
 
 //Для дизлайкания карточки
-function onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikes) {
-  const cardDislikeAddReport = callFetch(cardLikes + cardData._id, "DELETE");
+function onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikesURL) {
+  const cardDislikeAddReport = callFetch(cardLikesURL + cardData._id, "DELETE");
   cardDislikeAddReport.then((res) => {
     cardLikeButton.classList.remove(cardBasicConfig.basicCardLikeUnlike);
     cardLikeCounter.textContent = res.likes.length;

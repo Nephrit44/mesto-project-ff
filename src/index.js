@@ -176,11 +176,11 @@ addAnimated(popupNewCard); //Анимация на окно
 popupCloseByOverlay(popupNewCard); //Закрытия окна по оверлею
 modalFormClickListener(formsNewCard, createNewUserCard);
 popupNewCardCloseButton.addEventListener("click", function () {
-  clearValidation(formsTypeEdit, validationConfig);
   closePopup(popupNewCard); //Закрытие окна по крестику
 });
 //Создание новой карточки
 newCardAddButton.addEventListener("click", function () {
+  clearValidation(formsNewCard, validationConfig);
   formReset(formsNewCard);
   openPopup(popupNewCard);
 });
@@ -201,6 +201,7 @@ function createNewUserCard() {
           cardLikesURL,
           curentUserID,
           onDeleteCard,
+          cardLikesURL,
         )
       );
     })
@@ -244,17 +245,22 @@ windowForDeleteCloseButton.addEventListener("click", function () {
   closePopup(windowForDelete); //Закрытие окна по крестику
 });
 
-buttonConfirmationDelete.addEventListener("click", function(){
-  cardDeleteFunction(cardURL, cardVariables.cardDataID, cardVariables.cardElement)
-});
-
+/*
+101. Функция прнимает данные прикрученные к карточке во время создания (100) и сохраняем во временную переменную
+и открываем окно для удаления
+*/
 function onDeleteCard(cardData, copyCard){
   cardVariables.cardDataID = cardData._id;
   cardVariables.cardElement = copyCard;
   openPopup(windowForDelete);
 };
 
-//*Функция удаления выбранной карточки
+//102. Слушаем нажатие на кнопку в окне для удаления и передаём данные полученные в 101
+buttonConfirmationDelete.addEventListener("click", function(){
+  cardDeleteFunction(cardURL, cardVariables.cardDataID, cardVariables.cardElement)
+});
+
+//103. Функция удаления выбранной карточки по данным из 102
 function cardDeleteFunction(cardURL, cardID, removedElemetn) {
   callFetch(cardURL + cardID, "DELETE")
     .then((result) => {
@@ -349,6 +355,7 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
           cardLikesURL,
           curentUserID,
           onDeleteCard,
+          cardLikesURL,
         )
       );
     });
