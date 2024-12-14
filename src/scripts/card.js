@@ -32,15 +32,9 @@ function createCard(
     .cloneNode(true);
   const cardImage = copyCard.querySelector(cardBasicConfig.placeForImage);
   const cardTitle = copyCard.querySelector(cardBasicConfig.basicCardName);
-  const cardDeleteButton = copyCard.querySelector(
-    cardBasicConfig.basicCardDeleteButton
-  );
-  const cardLikeButton = copyCard.querySelector(
-    cardBasicConfig.basicCardLikeButton
-  );
-  const cardLikeCounter = copyCard.querySelector(
-    cardBasicConfig.basicCardLikeCouner
-  );
+  const cardDeleteButton = copyCard.querySelector(cardBasicConfig.basicCardDeleteButton);
+  const cardLikeButton = copyCard.querySelector(cardBasicConfig.basicCardLikeButton);
+  const cardLikeCounter = copyCard.querySelector(cardBasicConfig.basicCardLikeCouner);
 
   cardTitle.textContent = cardData.name; //Имя картинки
   cardImage.src = cardData.link; //Ссылка на картинку
@@ -100,6 +94,4 @@ function onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikes) {
     cardLikeCounter.textContent = res.likes.length;
   })
 };
-
-//============================================================================================================
 

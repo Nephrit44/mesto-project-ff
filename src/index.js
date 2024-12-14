@@ -47,11 +47,12 @@ const basicConfig = {
   formAvatarProfile: "new-avatar", //Форма в окне для новой аватарки
 
   // ======================== Ошибки
-  errorUpdateUserData: "Произошла ошибка при сохранении данных пользователя",
+  errorUpdateUserData: "Произошла ошибка при сохранении данных пользователя. ",
   errorUpdateUserAvatar:
-    "Произошла ошибка при обновлении аватарки пользователя",
+    "Произошла ошибка при обновлении аватарки пользователя. ",
   errorNoUserAvatar: "./images/avatar.jpg",
-  errorGetCards: "Данные с карточками не получены",
+  errorGetCards: "Данные с карточками не получены. ",
+  errorDeleteCard: "При попытке удалить карточку, произошла ошибка. ",
   // ======================== Сообщения на элементах
   messageButtonLoading: "Сохранение...",
   messageButtonDefault: "Сохранить",
@@ -69,21 +70,26 @@ const validationConfig = {
 
 // =============================== Общие переменные =========================================
 const placesList = document.querySelector(basicConfig.cardList);
-const profileEditButton = document.querySelector(basicConfig.userProfileEditButton);
+const profileEditButton = document.querySelector(
+  basicConfig.userProfileEditButton
+);
 const placeForUserAvatar = document.querySelector(basicConfig.onPageUserAvatar);
 
 // =============================== Переменные для API запросов ==============================
 let curentUserID = "";
 const userURL = "users/me/";
 const cardURL = "cards/";
-const cardLikes = "cards/likes/";
+const cardLikesURL = "cards/likes/";
 const userAvatar = "avatar/";
-
 
 // ================================ Модалка увеличение картинки =============================
 const popupImageForm = document.querySelector(basicConfig.windowImage);
-const popupImageFormCloseButton = popupImageForm.querySelector(basicConfig.buttonClose);
-const popupImageTitle = popupImageForm.querySelector(basicConfig.formImageTitle);
+const popupImageFormCloseButton = popupImageForm.querySelector(
+  basicConfig.buttonClose
+);
+const popupImageTitle = popupImageForm.querySelector(
+  basicConfig.formImageTitle
+);
 const popupImageLink = popupImageForm.querySelector(basicConfig.formImageLink);
 addAnimated(popupImageForm); //Анимация на окно
 popupCloseByOverlay(popupImageForm); //Закрытия окна по оверлею
@@ -102,19 +108,22 @@ function openImagePopup(cardData) {
 // ================================ Модалка редактирование профиля ==========================
 const popupEditProfile = document.querySelector(basicConfig.windowEditProfile);
 const formsTypeEdit = document.forms[basicConfig.formEditProfile];
-const popupProfileCloseButton = popupEditProfile.querySelector(basicConfig.buttonClose);
+const popupProfileCloseButton = popupEditProfile.querySelector(
+  basicConfig.buttonClose
+);
 const popupUserNameInput = formsTypeEdit.name; //Новое имя профиля
 const popupUserDescriptionInput = formsTypeEdit.description; //новое описание профиля
 const onPageUserName = document.querySelector(basicConfig.onPageUserName);
-const onPageUserDescription = document.querySelector(basicConfig.onPageUserDescription);
+const onPageUserDescription = document.querySelector(
+  basicConfig.onPageUserDescription
+);
 const curentUserImage = document.querySelector(basicConfig.onPageUserAvatar);
-const popupEditProfileButtonSubmit = popupEditProfile.querySelector(validationConfig.submitButtonSelector);
+const popupEditProfileButtonSubmit = popupEditProfile.querySelector(
+  validationConfig.submitButtonSelector
+);
 addAnimated(popupEditProfile); //Анимация на окно
 popupCloseByOverlay(popupEditProfile); //Закрытия окна по оверлею
-placeForUserAvatar.addEventListener("click", function () {
-  windowForChangeAvatar.classList.add(basicConfig.showElement);
-});
-modalFormClickListener(formsTypeEdit, popupEditProfile, saveUserDataFromPopupToPage);
+modalFormClickListener(formsTypeEdit, saveUserDataFromPopupToPage);
 popupProfileCloseButton.addEventListener("click", function () {
   clearValidation(formsTypeEdit, validationConfig);
   closePopup(popupEditProfile); //Закрытие окна по крестику
@@ -129,34 +138,41 @@ profileEditButton.addEventListener("click", function () {
 
 //Выводим новые данные пользователя на страницу
 function saveUserDataFromPopupToPage() {
-  let sendData = {
+  const sendData = {
     name: popupUserNameInput.value,
     about: popupUserDescriptionInput.value,
   };
-  popupEditProfileButtonSubmit.textContent = basicConfig.messageButtonLoading
-  let updateUserData = callFetch(userURL, "PATCH", sendData);
-  updateUserData.then((resolve) => {
-    onPageUserName.textContent = sendData.name;
-    onPageUserDescription.textContent = sendData.about;
-  })
-  .catch((rejected) => alert(basicConfig.errorUpdateUserData + rejected))
-  .finally(() => {
-    closePopup(popupEditProfile);
-    popupEditProfileButtonSubmit.textContent = basicConfig.messageButtonDefault;
-  });
+  popupEditProfileButtonSubmit.textContent = basicConfig.messageButtonLoading;
+  callFetch(userURL, "PATCH", sendData)
+    .then((result) => {
+      onPageUserName.textContent = sendData.name;
+      onPageUserDescription.textContent = sendData.about;
+    })
+    .catch((error) => console.log(basicConfig.errorUpdateUserData + rejected))
+    .finally(() => {
+      closePopup(popupEditProfile);
+      popupEditProfileButtonSubmit.textContent =
+        basicConfig.messageButtonDefault;
+    });
 }
 
 // =============================== Модалка новая карточка ===================================
 const popupNewCard = document.querySelector(basicConfig.windowNewCard);
-const popupNewCardCloseButton = popupNewCard.querySelector(basicConfig.buttonClose);
-const newCardAddButton = document.querySelector(basicConfig.createNewCardButton);
+const popupNewCardCloseButton = popupNewCard.querySelector(
+  basicConfig.buttonClose
+);
+const newCardAddButton = document.querySelector(
+  basicConfig.createNewCardButton
+);
 const formsNewCard = document.forms["new-place"]; //Форма создания новой карточки
 const popupNewPlaceInput = formsNewCard["place-name"]; //Название новой карточки
 const popupNewLinkInput = formsNewCard.link; //Ссылка на изображение для карточки
-const popupNewCardButtonSubmit = popupNewCard.querySelector(validationConfig.submitButtonSelector);
+const popupNewCardButtonSubmit = popupNewCard.querySelector(
+  validationConfig.submitButtonSelector
+);
 addAnimated(popupNewCard); //Анимация на окно
 popupCloseByOverlay(popupNewCard); //Закрытия окна по оверлею
-modalFormClickListener(formsNewCard, popupNewCard, createNewUserCard);
+modalFormClickListener(formsNewCard, createNewUserCard);
 popupNewCardCloseButton.addEventListener("click", function () {
   clearValidation(formsTypeEdit, validationConfig);
   closePopup(popupNewCard); //Закрытие окна по крестику
@@ -168,57 +184,60 @@ newCardAddButton.addEventListener("click", function () {
 });
 //Создание пользовательской карточки
 function createNewUserCard() {
-  let sendData = {
+  const sendData = {
     name: popupNewPlaceInput.value,
     link: popupNewLinkInput.value,
   };
   popupNewCardButtonSubmit.textContent = basicConfig.messageButtonLoading;
-    let resultCreateCard = callFetch(cardURL, "POST", sendData);
-    resultCreateCard.then((resolve) => {
+  callFetch(cardURL, "POST", sendData)
+    .then((result) => {
       placesList.prepend(
         createCard(
-          resolve,
+          result,
           onDeleteCard,
-          cardLikes,
+          cardLikesURL,
           openImagePopup,
           curentUserID,
           cardDeleteFunction,
           cardLikeFunction
         )
-      )
-    resultCreateCard.catch((rejected) => alert(basicConfig.errorUpdateUserAvatar + rejected))
-    resultCreateCard.finally(() => {
-        closePopup(popupNewCard);
-        popupNewCardButtonSubmit.textContent = basicConfig.messageButtonDefault;
-      });
+      );
+    })
+    .catch((error) => console.log(basicConfig.errorUpdateUserAvatar + error))
+    .finally(() => {
+      closePopup(popupNewCard);
+      popupNewCardButtonSubmit.textContent = basicConfig.messageButtonDefault;
     });
 }
 //Функция удаления выбранной карточки
-const cardDeleteFunction = function createPopupConfirmatinDelete(
-  cardID,
-  removedElemetn
-) {
-  windowForDelete.classList.add(basicConfig.showElement);
-  buttonConfirmationDelete.addEventListener("click", function () {
-    callFetch(cardURL + cardID, "DELETE");
-    removedElemetn.remove();
-    closePopup(windowForDelete);
-  });
+function cardDeleteFunction(cardID, removedElemetn) {
+  openPopup(windowForDelete);
+
+  callFetch(cardURL + cardID, "DELETE")
+    .then((result) => {
+      removedElemetn.remove();
+      closePopup(windowForDelete);
+    })
+    .catch((error) => {
+      console.log(basicConfig.errorDeleteCard + error);
+    })
+    .finally(() => {});
 };
+
 //Функция лайкания
 function cardLikeFunction(
   cardData,
   cardLikeButton,
   cardLikeCounter,
-  cardLikes
+  cardLikesURL
 ) {
   const chekLiked = cardLikeButton.classList.contains(
     cardBasicConfig.basicCardLikeUnlike
   );
   if (chekLiked) {
-    onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikes);
+    onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikesURL);
   } else {
-    onLikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikes);
+    onLikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikesURL);
   }
 }
 
@@ -239,29 +258,40 @@ windowForDeleteCloseButton.addEventListener("click", function () {
 
 // ============================== Модалка редактирования фотографии профиля =================
 const windowForChangeAvatar = document.querySelector(basicConfig.windowAvatar);
-const windowForChangeAvatarCloseButton = windowForChangeAvatar.querySelector(basicConfig.buttonClose);
+const windowForChangeAvatarCloseButton = windowForChangeAvatar.querySelector(
+  basicConfig.buttonClose
+);
 const formsAvatarEdit = document.forms[basicConfig.formAvatarProfile];
 const newURLUserAvatar = formsAvatarEdit["avatar-link"];
 addAnimated(windowForChangeAvatar); //Анимация на окно
 popupCloseByOverlay(windowForChangeAvatar); //Закрытия окна по оверлею
+
+placeForUserAvatar.addEventListener("click", function () {
+  formReset(formsAvatarEdit);
+  openPopup(windowForChangeAvatar);
+});
+
 windowForChangeAvatarCloseButton.addEventListener("click", function () {
   clearValidation(formsAvatarEdit, validationConfig);
   closePopup(windowForChangeAvatar); //Закрытие окна по крестику
 });
-modalFormClickListener(formsAvatarEdit, windowForChangeAvatar, saveUserAvatarFromPopupToPage);
+
+modalFormClickListener(formsAvatarEdit, saveUserAvatarFromPopupToPage);
+
 //Сохраняем новую аватарку польлзователя
 function saveUserAvatarFromPopupToPage() {
   let sendData = {
     avatar: newURLUserAvatar.value,
   };
-  let updateUserAvatar = callFetch(userURL + userAvatar, "PATCH", sendData);
-  popupNewCardButtonSubmit.textContent = basicConfig.messageButtonLoading;
-  updateUserAvatar
-    .then(function (res) {
-      placeForUserAvatar.style.backgroundImage = "url('" + res.avatar + "')";
-      formReset(formsAvatarEdit);
+  callFetch(userURL + userAvatar, "PATCH", sendData)
+    .then((result) => {
+      popupNewCardButtonSubmit.textContent = basicConfig.messageButtonLoading;
+      placeForUserAvatar.style.backgroundImage = "url('" + result.avatar + "')";
+      closePopup(windowForChangeAvatar);
     })
-    .catch((rejected) => alert(basicConfig.errorUpdateUserAvatar + rejected))
+    .catch((error) => {
+      console.log(basicConfig.errorUpdateUserAvatar + error);
+    })
     .finally(() => {
       popupNewCardButtonSubmit.textContent = basicConfig.messageButtonDefault;
     });
@@ -269,11 +299,10 @@ function saveUserAvatarFromPopupToPage() {
 
 // ============================= Общие функции =============================================
 //Слушалка на модальные формы
-function modalFormClickListener(curentForm, curentModalWindow, actionFunction) {
+function modalFormClickListener(curentForm, actionFunction) {
   curentForm.addEventListener("submit", function (e) {
     e.preventDefault();
     actionFunction();
-    closePopup(curentModalWindow);
   });
 }
 
@@ -292,6 +321,7 @@ enableValidation(validationConfig);
 //================================================= API =========================================================
 //Получение текщего пользователя и коллекции карточек
 Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
+
   .then(([user, cards]) => {
     onPageUserName.textContent = user.name;
     onPageUserDescription.textContent = user.about;
@@ -304,20 +334,18 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
         createCard(
           cardData,
           onDeleteCard,
-          cardLikes,
           openImagePopup,
-          curentUserID,
           cardDeleteFunction,
-          cardLikeFunction
+          cardLikeFunction,
+          cardLikesURL,
+          curentUserID
         )
       );
-    })
-  })
-  .catch((rejected) => {
-    alarm(basicConfig.errorGetCards + rejected)
-    basicConfig.onPageUserName = "Не найден";
-    basicConfig.onPageUserDescription = "Не найден";
-    initialCards.forEach((card) => {
-      placesList.append(createCard(card, onDeleteCard, openImagePopup));
     });
   })
+  .catch((error) => {
+    console.log(basicConfig.errorGetCards + error);
+
+    basicConfig.onPageUserName = "Не найден";
+    basicConfig.onPageUserDescription = "Не найден";
+  });

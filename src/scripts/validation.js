@@ -3,6 +3,7 @@ export {
   enableValidation,
   clearValidation,
 };
+
 const enableValidation = (options) => {
   const formLists = document.querySelectorAll(options.formSelector);
 

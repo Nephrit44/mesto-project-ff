@@ -13,17 +13,12 @@ function callFetch(queryURL, queryMethod, sendData) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(sendData),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Ошибка запроса");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      return data;
-    })
-    .catch((error) => {
-      return error;
-    });
+  }).then((result) => getResponseData(result));
+}
+
+function getResponseData(result) {
+  if (!result.ok) {
+    throw new Error(`Ошибка запроса ${response.status}`);
+  }
+  return result.json();
 }
