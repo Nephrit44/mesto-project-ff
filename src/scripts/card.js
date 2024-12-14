@@ -1,4 +1,4 @@
-export { createCard, onLikeCard, onDislikeCard, onDeleteCard, cardBasicConfig };
+export { createCard, onLikeCard, onDislikeCard, cardBasicConfig };
 import { callFetch } from "./api.js";
 
 const cardBasicConfig = {
@@ -17,15 +17,13 @@ const cardBasicConfig = {
 };
 
 const cardTemplate = document.querySelector(cardBasicConfig.templateCard).content;
-
 function createCard(
   cardData,
-  onDeleteCard,
-  cardLikes, 
   openImagePopup,
+  cardLikeFunction,
+  cardLikesURL,
   curentUserID,
-  cardDeleteFunction,
-  cardLikeFunction
+  onDeleteCard,
 ) {
   const copyCard = cardTemplate
     .querySelector(cardBasicConfig.basicCard)
@@ -46,22 +44,18 @@ function createCard(
     cardLikeCounter.textContent = cardData.likes.length; //Количество лайков
   }
 
-  //Если ID пользователя получение при загрузке профиля совпадает с ID из базы
-  //добавляем слушалку на уделение, если нет прячем
-
-  if (curentUserID == cardData.owner._id) {
-    cardDeleteButton.addEventListener("click", () =>
-      onDeleteCard(copyCard, cardDeleteFunction, cardData)
-    );
-  } else {
+  if (curentUserID != cardData.owner._id) {
     cardDeleteButton.classList.add(cardBasicConfig.basicCardDeleteButtonHide);
   }
+  
+  cardDeleteButton.addEventListener("click", function() {
+    onDeleteCard(cardData, copyCard);
+  });   
 
   //Если ранее лайк стоял. Красим сердце
   if (cardData.likes.some((likeRecord) => likeRecord._id === curentUserID)) {
     cardLikeButton.classList.add(cardBasicConfig.basicCardLikeUnlike);
   }
-
 
   cardLikeButton.addEventListener("click", () => {
     cardLikeFunction(cardData, cardLikeButton, cardLikeCounter, cardLikes);
@@ -70,11 +64,6 @@ function createCard(
   cardImage.addEventListener("click", () => openImagePopup(cardData));
 
   return copyCard;
-}
-
-//Удаление элемента
-function onDeleteCard(element, cardDeleteFunction, cardData) {
-  const resultFunction = cardDeleteFunction(cardData._id, element);
 }
 
 //Для лайкания карточки

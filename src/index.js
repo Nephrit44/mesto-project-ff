@@ -1,9 +1,7 @@
-import { initialCards } from "./scripts/cards.js";
 import {
   createCard,
   onLikeCard,
   onDislikeCard,
-  onDeleteCard,
   cardBasicConfig,
 } from "./scripts/card.js";
 import { openPopup, closePopup, popupCloseByOverlay } from "./scripts/modal.js";
@@ -12,6 +10,10 @@ import { callFetch } from "./scripts/api.js";
 import "./pages/index.css";
 
 export { openImagePopup };
+const cardVariables = {
+  cardDataID: "",
+  cardElement: "",
+}
 
 const basicConfig = {
   // ======================== Общие параметры
@@ -194,12 +196,11 @@ function createNewUserCard() {
       placesList.prepend(
         createCard(
           result,
-          onDeleteCard,
-          cardLikesURL,
           openImagePopup,
+          cardLikeFunction,
+          cardLikesURL,
           curentUserID,
-          cardDeleteFunction,
-          cardLikeFunction
+          onDeleteCard,
         )
       );
     })
@@ -209,20 +210,6 @@ function createNewUserCard() {
       popupNewCardButtonSubmit.textContent = basicConfig.messageButtonDefault;
     });
 }
-//Функция удаления выбранной карточки
-function cardDeleteFunction(cardID, removedElemetn) {
-  openPopup(windowForDelete);
-
-  callFetch(cardURL + cardID, "DELETE")
-    .then((result) => {
-      removedElemetn.remove();
-      closePopup(windowForDelete);
-    })
-    .catch((error) => {
-      console.log(basicConfig.errorDeleteCard + error);
-    })
-    .finally(() => {});
-};
 
 //Функция лайкания
 function cardLikeFunction(
@@ -245,16 +232,40 @@ function cardLikeFunction(
 const windowForDelete = document.querySelector(basicConfig.windowDelete);
 const buttonConfirmationDelete = windowForDelete.querySelector(
   basicConfig.confirmationDeleteButton
-);
+);  
 const windowForDeleteCloseButton = windowForDelete.querySelector(
   basicConfig.buttonClose
 );
 addAnimated(windowForDelete); //Анимация на окно
 popupCloseByOverlay(windowForDelete); //Закрытия окна по оверлею
+
 windowForDeleteCloseButton.addEventListener("click", function () {
   clearValidation(formsTypeEdit, validationConfig);
   closePopup(windowForDelete); //Закрытие окна по крестику
 });
+
+buttonConfirmationDelete.addEventListener("click", function(){
+  cardDeleteFunction(cardURL, cardVariables.cardDataID, cardVariables.cardElement)
+});
+
+function onDeleteCard(cardData, copyCard){
+  cardVariables.cardDataID = cardData._id;
+  cardVariables.cardElement = copyCard;
+  openPopup(windowForDelete);
+};
+
+//*Функция удаления выбранной карточки
+function cardDeleteFunction(cardURL, cardID, removedElemetn) {
+  callFetch(cardURL + cardID, "DELETE")
+    .then((result) => {
+      removedElemetn.remove();
+      closePopup(windowForDelete);
+    })
+    .catch((error) => {
+      console.log(basicConfig.errorDeleteCard + error);
+    })
+    .finally(() => {});
+};
 
 // ============================== Модалка редактирования фотографии профиля =================
 const windowForChangeAvatar = document.querySelector(basicConfig.windowAvatar);
@@ -333,12 +344,11 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
       placesList.append(
         createCard(
           cardData,
-          onDeleteCard,
           openImagePopup,
-          cardDeleteFunction,
           cardLikeFunction,
           cardLikesURL,
-          curentUserID
+          curentUserID,
+          onDeleteCard,
         )
       );
     });
