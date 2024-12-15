@@ -1,5 +1,4 @@
-export { createCard, onLikeCard, onDislikeCard, cardBasicConfig };
-import { callFetch } from "./api.js";
+export { createCard };
 
 const cardBasicConfig = {
   templateCard: "#card-template", //Заготовка под карточку
@@ -21,7 +20,6 @@ function createCard(
   cardData,
   openImagePopup,
   cardLikeFunction,
-  cardLikesURL,
   curentUserID,
   onDeleteCard,
 ) {
@@ -62,7 +60,7 @@ function createCard(
   лайком и дизлайком + ссылку где лежат лайки
   */
   cardLikeButton.addEventListener("click", () => {
-    cardLikeFunction(cardData, cardLikeButton, cardLikeCounter, cardLikesURL);
+    cardLikeFunction(cardData, cardLikeButton, cardLikeCounter, cardBasicConfig);
   });
 
   cardImage.addEventListener("click", () => openImagePopup(cardData));
@@ -70,21 +68,4 @@ function createCard(
   return copyCard;
 }
 
-//Для лайкания карточки
-function onLikeCard(cardData, cardLikeButton,  cardLikeCounter, cardLikesURL) {
-  const cardLikeAddReport = callFetch(cardLikesURL + cardData._id, "PUT");
-  cardLikeAddReport.then((res) => {
-    cardLikeButton.classList.add(cardBasicConfig.basicCardLikeUnlike);
-    cardLikeCounter.textContent = res.likes.length;
-  })
-};
-
-//Для дизлайкания карточки
-function onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikesURL) {
-  const cardDislikeAddReport = callFetch(cardLikesURL + cardData._id, "DELETE");
-  cardDislikeAddReport.then((res) => {
-    cardLikeButton.classList.remove(cardBasicConfig.basicCardLikeUnlike);
-    cardLikeCounter.textContent = res.likes.length;
-  })
-};
 

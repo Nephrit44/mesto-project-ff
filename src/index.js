@@ -1,9 +1,4 @@
-import {
-  createCard,
-  onLikeCard,
-  onDislikeCard,
-  cardBasicConfig,
-} from "./scripts/card.js";
+import { createCard } from "./scripts/card.js";
 import { openPopup, closePopup, popupCloseByOverlay } from "./scripts/modal.js";
 import { enableValidation, clearValidation } from "./scripts/validation.js";
 import { callFetch } from "./scripts/api.js";
@@ -13,7 +8,7 @@ export { openImagePopup };
 const cardVariables = {
   cardDataID: "",
   cardElement: "",
-}
+};
 
 const basicConfig = {
   // ======================== Общие параметры
@@ -55,6 +50,8 @@ const basicConfig = {
   errorNoUserAvatar: "./images/avatar.jpg",
   errorGetCards: "Данные с карточками не получены. ",
   errorDeleteCard: "При попытке удалить карточку, произошла ошибка. ",
+  errorLikeCard: "Произошла ошибка при попытке Лайкнуть карту. ",
+  errorDislikeCard: "Произошла ошибка при попытке снять Лайк с карты. ",
   // ======================== Сообщения на элементах
   messageButtonLoading: "Сохранение...",
   messageButtonDefault: "Сохранить",
@@ -198,10 +195,8 @@ function createNewUserCard() {
           result,
           openImagePopup,
           cardLikeFunction,
-          cardLikesURL,
           curentUserID,
           onDeleteCard,
-          cardLikesURL,
         )
       );
     })
@@ -213,19 +208,14 @@ function createNewUserCard() {
 }
 
 //Функция лайкания
-function cardLikeFunction(
-  cardData,
-  cardLikeButton,
-  cardLikeCounter,
-  cardLikesURL
-) {
+function cardLikeFunction(cardData, cardLikeButton, cardLikeCounter, cardBasicConfig) {
   const chekLiked = cardLikeButton.classList.contains(
     cardBasicConfig.basicCardLikeUnlike
   );
   if (chekLiked) {
-    onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikesURL);
+    onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardBasicConfig);
   } else {
-    onLikeCard(cardData, cardLikeButton, cardLikeCounter, cardLikesURL);
+    onLikeCard(cardData, cardLikeButton, cardLikeCounter, cardBasicConfig);
   }
 }
 
@@ -233,7 +223,7 @@ function cardLikeFunction(
 const windowForDelete = document.querySelector(basicConfig.windowDelete);
 const buttonConfirmationDelete = windowForDelete.querySelector(
   basicConfig.confirmationDeleteButton
-);  
+);
 const windowForDeleteCloseButton = windowForDelete.querySelector(
   basicConfig.buttonClose
 );
@@ -249,15 +239,19 @@ windowForDeleteCloseButton.addEventListener("click", function () {
 101. Функция прнимает данные прикрученные к карточке во время создания (100) и сохраняем во временную переменную
 и открываем окно для удаления
 */
-function onDeleteCard(cardData, copyCard){
+function onDeleteCard(cardData, copyCard) {
   cardVariables.cardDataID = cardData._id;
   cardVariables.cardElement = copyCard;
   openPopup(windowForDelete);
-};
+}
 
 //102. Слушаем нажатие на кнопку в окне для удаления и передаём данные полученные в 101
-buttonConfirmationDelete.addEventListener("click", function(){
-  cardDeleteFunction(cardURL, cardVariables.cardDataID, cardVariables.cardElement)
+buttonConfirmationDelete.addEventListener("click", function () {
+  cardDeleteFunction(
+    cardURL,
+    cardVariables.cardDataID,
+    cardVariables.cardElement
+  );
 });
 
 //103. Функция удаления выбранной карточки по данным из 102
@@ -271,7 +265,7 @@ function cardDeleteFunction(cardURL, cardID, removedElemetn) {
       console.log(basicConfig.errorDeleteCard + error);
     })
     .finally(() => {});
-};
+}
 
 // ============================== Модалка редактирования фотографии профиля =================
 const windowForChangeAvatar = document.querySelector(basicConfig.windowAvatar);
@@ -352,10 +346,8 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
           cardData,
           openImagePopup,
           cardLikeFunction,
-          cardLikesURL,
           curentUserID,
           onDeleteCard,
-          cardLikesURL,
         )
       );
     });
@@ -366,3 +358,33 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
     basicConfig.onPageUserName = "Не найден";
     basicConfig.onPageUserDescription = "Не найден";
   });
+
+//Для лайкания карточки
+function onLikeCard(cardData, cardLikeButton, cardLikeCounter, cardBasicConfig) {
+  callFetch(cardLikesURL + cardData._id, "PUT")
+  .then((res) => {
+    cardLikeButton.classList.add(cardBasicConfig.basicCardLikeUnlike);
+    cardLikeCounter.textContent = res.likes.length;
+  })
+  .catch((error) => {
+    console.log(basicConfig.errorLikeCard + error);
+  })
+  .finally(() => {
+
+  });
+}
+
+//Для дизлайкания карточки
+function onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardBasicConfig) {
+  callFetch(cardLikesURL + cardData._id, "DELETE")
+  .then((res) => {
+    cardLikeButton.classList.remove(cardBasicConfig.basicCardLikeUnlike);
+    cardLikeCounter.textContent = res.likes.length;
+  })
+  .catch((error) => {
+    console.log(basicConfig.errorDislikeCard + error);
+  })
+  .finally(() => {
+
+  });
+}
