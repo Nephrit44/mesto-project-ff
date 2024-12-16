@@ -4,7 +4,6 @@ import { enableValidation, clearValidation } from "./scripts/validation.js";
 import { callFetch } from "./scripts/api.js";
 import "./pages/index.css";
 
-export { openImagePopup };
 const cardVariables = {
   cardDataID: "",
   cardElement: "",
@@ -97,7 +96,7 @@ popupImageFormCloseButton.addEventListener("click", function () {
   closePopup(popupImageForm);
 });
 //Для увеличения карточки
-function openImagePopup(cardData) {
+function imagePopupShow(cardData) {
   popupImageTitle.textContent = cardData.name;
   popupImageLink.src = cardData.link;
   popupImageLink.alt = cardData.name;
@@ -122,7 +121,7 @@ const popupEditProfileButtonSubmit = popupEditProfile.querySelector(
 );
 addAnimated(popupEditProfile); //Анимация на окно
 popupCloseByOverlay(popupEditProfile); //Закрытия окна по оверлею
-modalFormClickListener(formsTypeEdit, saveUserDataFromPopupToPage);
+clickListnerOnModalForm(formsTypeEdit, saveUserDataFromPopupToPage);
 popupProfileCloseButton.addEventListener("click", function () {
   clearValidation(formsTypeEdit, validationConfig);
   closePopup(popupEditProfile); //Закрытие окна по крестику
@@ -146,13 +145,11 @@ function saveUserDataFromPopupToPage() {
     .then((result) => {
       onPageUserName.textContent = sendData.name;
       onPageUserDescription.textContent = sendData.about;
-    })
-    .catch((error) => console.log(basicConfig.errorUpdateUserData + rejected))
-    .finally(() => {
       closePopup(popupEditProfile);
       popupEditProfileButtonSubmit.textContent =
         basicConfig.messageButtonDefault;
-    });
+    })
+    .catch((error) => console.log(basicConfig.errorUpdateUserData + rejected))
 }
 
 // =============================== Модалка новая карточка ===================================
@@ -171,7 +168,7 @@ const popupNewCardButtonSubmit = popupNewCard.querySelector(
 );
 addAnimated(popupNewCard); //Анимация на окно
 popupCloseByOverlay(popupNewCard); //Закрытия окна по оверлею
-modalFormClickListener(formsNewCard, createNewUserCard);
+clickListnerOnModalForm(formsNewCard, createNewUserCard);
 popupNewCardCloseButton.addEventListener("click", function () {
   closePopup(popupNewCard); //Закрытие окна по крестику
 });
@@ -193,10 +190,10 @@ function createNewUserCard() {
       placesList.prepend(
         createCard(
           result,
-          openImagePopup,
-          cardLikeFunction,
+          imagePopupShow,
+          likeCardFunction,
           curentUserID,
-          onDeleteCard,
+          deletionWindowShow,
         )
       );
     })
@@ -208,7 +205,7 @@ function createNewUserCard() {
 }
 
 //Функция лайкания
-function cardLikeFunction(cardData, cardLikeButton, cardLikeCounter, cardBasicConfig) {
+function likeCardFunction(cardData, cardLikeButton, cardLikeCounter, cardBasicConfig) {
   const chekLiked = cardLikeButton.classList.contains(
     cardBasicConfig.basicCardLikeUnlike
   );
@@ -231,7 +228,6 @@ addAnimated(windowForDelete); //Анимация на окно
 popupCloseByOverlay(windowForDelete); //Закрытия окна по оверлею
 
 windowForDeleteCloseButton.addEventListener("click", function () {
-  clearValidation(formsTypeEdit, validationConfig);
   closePopup(windowForDelete); //Закрытие окна по крестику
 });
 
@@ -239,7 +235,7 @@ windowForDeleteCloseButton.addEventListener("click", function () {
 101. Функция прнимает данные прикрученные к карточке во время создания (100) и сохраняем во временную переменную
 и открываем окно для удаления
 */
-function onDeleteCard(cardData, copyCard) {
+function deletionWindowShow(cardData, copyCard) {
   cardVariables.cardDataID = cardData._id;
   cardVariables.cardElement = copyCard;
   openPopup(windowForDelete);
@@ -247,7 +243,7 @@ function onDeleteCard(cardData, copyCard) {
 
 //102. Слушаем нажатие на кнопку в окне для удаления и передаём данные полученные в 101
 buttonConfirmationDelete.addEventListener("click", function () {
-  cardDeleteFunction(
+  deleteCardFunction(
     cardURL,
     cardVariables.cardDataID,
     cardVariables.cardElement
@@ -255,7 +251,7 @@ buttonConfirmationDelete.addEventListener("click", function () {
 });
 
 //103. Функция удаления выбранной карточки по данным из 102
-function cardDeleteFunction(cardURL, cardID, removedElemetn) {
+function deleteCardFunction(cardURL, cardID, removedElemetn) {
   callFetch(cardURL + cardID, "DELETE")
     .then((result) => {
       removedElemetn.remove();
@@ -264,7 +260,6 @@ function cardDeleteFunction(cardURL, cardID, removedElemetn) {
     .catch((error) => {
       console.log(basicConfig.errorDeleteCard + error);
     })
-    .finally(() => {});
 }
 
 // ============================== Модалка редактирования фотографии профиля =================
@@ -287,7 +282,7 @@ windowForChangeAvatarCloseButton.addEventListener("click", function () {
   closePopup(windowForChangeAvatar); //Закрытие окна по крестику
 });
 
-modalFormClickListener(formsAvatarEdit, saveUserAvatarFromPopupToPage);
+clickListnerOnModalForm(formsAvatarEdit, saveUserAvatarFromPopupToPage);
 
 //Сохраняем новую аватарку польлзователя
 function saveUserAvatarFromPopupToPage() {
@@ -310,7 +305,7 @@ function saveUserAvatarFromPopupToPage() {
 
 // ============================= Общие функции =============================================
 //Слушалка на модальные формы
-function modalFormClickListener(curentForm, actionFunction) {
+function clickListnerOnModalForm(curentForm, actionFunction) {
   curentForm.addEventListener("submit", function (e) {
     e.preventDefault();
     actionFunction();
@@ -344,10 +339,10 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
       placesList.append(
         createCard(
           cardData,
-          openImagePopup,
-          cardLikeFunction,
+          imagePopupShow,
+          likeCardFunction,
           curentUserID,
-          onDeleteCard,
+          deletionWindowShow,
         )
       );
     });

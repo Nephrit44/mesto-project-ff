@@ -54,12 +54,12 @@ const hideInputError = (form, curentInput, options) => {
 };
 
 const disableButtonsubmit = (curentFormSubmitButton, options) => {
-  curentFormSubmitButton.classList.add("popup__button_disabled");
+  curentFormSubmitButton.classList.add(options.inactiveButtonClass);
   curentFormSubmitButton.disabled = true;
 };
 
 const enableButtonsubmit = (curentFormSubmitButton, options) => {
-  curentFormSubmitButton.classList.remove("popup__button_disabled");
+  curentFormSubmitButton.classList.remove(options.inactiveButtonClass);
   curentFormSubmitButton.disabled = false;
 };
 

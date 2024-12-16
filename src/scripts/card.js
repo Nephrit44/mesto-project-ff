@@ -19,9 +19,9 @@ const cardTemplate = document.querySelector(cardBasicConfig.templateCard).conten
 function createCard(
   cardData,
   openImagePopup,
-  cardLikeFunction,
+  likeCardFunction,
   curentUserID,
-  onDeleteCard,
+  deletionWindowShow,
 ) {
   const copyCard = cardTemplate
     .querySelector(cardBasicConfig.basicCard)
@@ -33,7 +33,7 @@ function createCard(
   const cardLikeCounter = copyCard.querySelector(cardBasicConfig.basicCardLikeCouner);
 
   cardTitle.textContent = cardData.name; //Имя картинки
-  cardImage.src = cardData.link; //Ссылка на картинку
+  cardImage.src = cardData.link;
   cardImage.alt = cardData.name; //Альтернативное описание картинки
 
   if (typeof cardData.likes.length === "undefined") {
@@ -48,7 +48,7 @@ function createCard(
   
   //100. "Прикручиваем" функцию для передачитекущих данных к кнопке с корзинкой
   cardDeleteButton.addEventListener("click", function() {
-    onDeleteCard(cardData, copyCard);
+    deletionWindowShow(cardData, copyCard);
   });   
 
   //200. Если ранее лайк стоял. Красим сердце
@@ -60,7 +60,7 @@ function createCard(
   лайком и дизлайком + ссылку где лежат лайки
   */
   cardLikeButton.addEventListener("click", () => {
-    cardLikeFunction(cardData, cardLikeButton, cardLikeCounter, cardBasicConfig);
+    likeCardFunction(cardData, cardLikeButton, cardLikeCounter, cardBasicConfig);
   });
 
   cardImage.addEventListener("click", () => openImagePopup(cardData));
