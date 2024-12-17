@@ -146,10 +146,12 @@ function saveUserDataFromPopupToPage() {
       onPageUserName.textContent = sendData.name;
       onPageUserDescription.textContent = sendData.about;
       closePopup(popupEditProfile);
-      popupEditProfileButtonSubmit.textContent =
-        basicConfig.messageButtonDefault;
     })
     .catch((error) => console.log(basicConfig.errorUpdateUserData + rejected))
+    .finally(() => {
+      popupEditProfileButtonSubmit.textContent =
+        basicConfig.messageButtonDefault;
+    });
 }
 
 // =============================== Модалка новая карточка ===================================
@@ -175,7 +177,7 @@ popupNewCardCloseButton.addEventListener("click", function () {
 //Создание новой карточки
 newCardAddButton.addEventListener("click", function () {
   clearValidation(formsNewCard, validationConfig);
-  formReset(formsNewCard);
+  resetForm(formsNewCard);
   openPopup(popupNewCard);
 });
 //Создание пользовательской карточки
@@ -193,19 +195,24 @@ function createNewUserCard() {
           imagePopupShow,
           likeCardFunction,
           curentUserID,
-          deletionWindowShow,
+          deleteCard
         )
       );
+      closePopup(popupNewCard);
     })
     .catch((error) => console.log(basicConfig.errorUpdateUserAvatar + error))
     .finally(() => {
-      closePopup(popupNewCard);
       popupNewCardButtonSubmit.textContent = basicConfig.messageButtonDefault;
     });
 }
 
 //Функция лайкания
-function likeCardFunction(cardData, cardLikeButton, cardLikeCounter, cardBasicConfig) {
+function likeCardFunction(
+  cardData,
+  cardLikeButton,
+  cardLikeCounter,
+  cardBasicConfig
+) {
   const chekLiked = cardLikeButton.classList.contains(
     cardBasicConfig.basicCardLikeUnlike
   );
@@ -235,7 +242,7 @@ windowForDeleteCloseButton.addEventListener("click", function () {
 101. Функция прнимает данные прикрученные к карточке во время создания (100) и сохраняем во временную переменную
 и открываем окно для удаления
 */
-function deletionWindowShow(cardData, copyCard) {
+function deleteCard(cardData, copyCard) {
   cardVariables.cardDataID = cardData._id;
   cardVariables.cardElement = copyCard;
   openPopup(windowForDelete);
@@ -259,7 +266,7 @@ function deleteCardFunction(cardURL, cardID, removedElemetn) {
     })
     .catch((error) => {
       console.log(basicConfig.errorDeleteCard + error);
-    })
+    });
 }
 
 // ============================== Модалка редактирования фотографии профиля =================
@@ -273,7 +280,7 @@ addAnimated(windowForChangeAvatar); //Анимация на окно
 popupCloseByOverlay(windowForChangeAvatar); //Закрытия окна по оверлею
 
 placeForUserAvatar.addEventListener("click", function () {
-  formReset(formsAvatarEdit);
+  resetForm(formsAvatarEdit);
   openPopup(windowForChangeAvatar);
 });
 
@@ -313,7 +320,7 @@ function clickListnerOnModalForm(curentForm, actionFunction) {
 }
 
 //Сброс формы в Default
-function formReset(formName) {
+function resetForm(formName) {
   formName.reset();
 }
 
@@ -342,7 +349,7 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
           imagePopupShow,
           likeCardFunction,
           curentUserID,
-          deletionWindowShow,
+          deleteCard
         )
       );
     });
@@ -355,31 +362,37 @@ Promise.all([callFetch(userURL, "GET"), callFetch(cardURL, "GET")])
   });
 
 //Для лайкания карточки
-function onLikeCard(cardData, cardLikeButton, cardLikeCounter, cardBasicConfig) {
+function onLikeCard(
+  cardData,
+  cardLikeButton,
+  cardLikeCounter,
+  cardBasicConfig
+) {
   callFetch(cardLikesURL + cardData._id, "PUT")
-  .then((res) => {
-    cardLikeButton.classList.add(cardBasicConfig.basicCardLikeUnlike);
-    cardLikeCounter.textContent = res.likes.length;
-  })
-  .catch((error) => {
-    console.log(basicConfig.errorLikeCard + error);
-  })
-  .finally(() => {
-
-  });
+    .then((res) => {
+      cardLikeButton.classList.add(cardBasicConfig.basicCardLikeUnlike);
+      cardLikeCounter.textContent = res.likes.length;
+    })
+    .catch((error) => {
+      console.log(basicConfig.errorLikeCard + error);
+    })
+    .finally(() => {});
 }
 
 //Для дизлайкания карточки
-function onDislikeCard(cardData, cardLikeButton, cardLikeCounter, cardBasicConfig) {
+function onDislikeCard(
+  cardData,
+  cardLikeButton,
+  cardLikeCounter,
+  cardBasicConfig
+) {
   callFetch(cardLikesURL + cardData._id, "DELETE")
-  .then((res) => {
-    cardLikeButton.classList.remove(cardBasicConfig.basicCardLikeUnlike);
-    cardLikeCounter.textContent = res.likes.length;
-  })
-  .catch((error) => {
-    console.log(basicConfig.errorDislikeCard + error);
-  })
-  .finally(() => {
-
-  });
+    .then((res) => {
+      cardLikeButton.classList.remove(cardBasicConfig.basicCardLikeUnlike);
+      cardLikeCounter.textContent = res.likes.length;
+    })
+    .catch((error) => {
+      console.log(basicConfig.errorDislikeCard + error);
+    })
+    .finally(() => {});
 }

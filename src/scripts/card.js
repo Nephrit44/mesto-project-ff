@@ -18,10 +18,10 @@ const cardBasicConfig = {
 const cardTemplate = document.querySelector(cardBasicConfig.templateCard).content;
 function createCard(
   cardData,
-  openImagePopup,
+  imagePopupShow,
   likeCardFunction,
   curentUserID,
-  deletionWindowShow,
+  deleteCard,
 ) {
   const copyCard = cardTemplate
     .querySelector(cardBasicConfig.basicCard)
@@ -48,7 +48,7 @@ function createCard(
   
   //100. "Прикручиваем" функцию для передачитекущих данных к кнопке с корзинкой
   cardDeleteButton.addEventListener("click", function() {
-    deletionWindowShow(cardData, copyCard);
+    deleteCard(cardData, copyCard);
   });   
 
   //200. Если ранее лайк стоял. Красим сердце
@@ -63,7 +63,7 @@ function createCard(
     likeCardFunction(cardData, cardLikeButton, cardLikeCounter, cardBasicConfig);
   });
 
-  cardImage.addEventListener("click", () => openImagePopup(cardData));
+  cardImage.addEventListener("click", () => imagePopupShow(cardData));
 
   return copyCard;
 }
